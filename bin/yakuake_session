@@ -1,0 +1,111 @@
+#!/usr/bin/env perl
+# @(#)Ident: yakuake_session 2013-03-29 00:25 pjf ;
+
+use strict;
+use warnings;
+use version; our $VERSION = qv( sprintf '0.1.%d', q$Rev: 1 $ =~ /\d+/gmx );
+
+use Yakuake::Sessions;
+
+exit Yakuake::Sessions->new_with_options
+   ( appclass => 'Yakuake::Sessions', nodebug => 1 )->run;
+
+__END__
+
+=pod
+
+=head1 NAME
+
+yakuake_session - Session Manager for the Yakuake Terminal Emulator
+
+=head1 SYNOPSIS
+
+=over 3
+
+=item B<yakuake_session> create | delete | edit | list | load | show I<profile>
+
+Execute named method
+
+=item B<yakuake_session> B<-H> | B<-h> I<[method]>| B<-?>
+
+Display man page / help method  / usage string
+
+=item B<yakuake_session> list_methods
+
+Lists the methods available in this program
+
+=back
+
+=head1 VERSION
+
+0.1.$Rev: 1 $
+
+=head1 DESCRIPTION
+
+Create, edit, load session profiles for the Yakuake Terminal Emulator
+
+=head1 REQUIRED ARGUMENTS
+
+=over 3
+
+=item I<profile>
+
+The name of the profile being managed
+
+=back
+
+=head1 OPTIONS
+
+=over 3
+
+=item B<-D>
+
+Turn debugging on
+
+=back
+
+=head1 DIAGNOSTICS
+
+Prints errors to stderr
+
+=head1 EXIT STATUS
+
+Returns zero on success, non zero on failure
+
+=head1 CONFIGURATION
+
+Uses the constructor's C<appclass> attribute to locate a configuration file
+
+=head1 DEPENDENCIES
+
+=over 3
+
+=item L<Yakuake::Sessions>
+
+=back
+
+=head1 INCOMPATIBILITIES
+
+None
+
+=head1 BUGS AND LIMITATIONS
+
+Send reports to address below
+
+=head1 AUTHOR
+
+Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright (c) 2012 Peter Flanigan
+
+This is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut
+
+# Local Variables:
+# mode: perl
+# tab-width: 3
+# End:
