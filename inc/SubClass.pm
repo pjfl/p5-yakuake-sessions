@@ -1,4 +1,4 @@
-# @(#)Ident: SubClass.pm 2013-03-27 23:41 pjf ;
+# @(#)Ident: SubClass.pm 2013-03-29 18:58 pjf ;
 # Bob-Version: 1.8
 
 use Pod::Select;
@@ -24,9 +24,8 @@ sub _create_readme_md {
    my $path   = $self->dist_version_from;
 
    open my $in,  '<', $path       or die "Path ${path} cannot open: ${!}";
+   $parser->parse_from_filehandle( $in ); close $in;
    open my $out, '>', 'README.md' or die "File README.md cannot open: ${!}";
-   $parser->parse_from_filehandle( $in );
-   print {$out} $parser->as_markdown;
-   close $in; close $out;
+   print {$out} $parser->as_markdown; close $out;
    return;
 }

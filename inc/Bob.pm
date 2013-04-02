@@ -1,4 +1,4 @@
-# @(#)Ident: Bob.pm 2013-03-29 20:39 pjf ;
+# @(#)Ident: Bob.pm 2013-04-01 14:34 pjf ;
 
 package Bob;
 
@@ -10,7 +10,7 @@ sub whimper { print {*STDOUT} $_[ 0 ]."\n"; exit 0 }
 
 BEGIN { my $reason; $reason = CPANTesting::should_abort and whimper $reason; }
 
-use version; our $VERSION = qv( '1.8' );
+use version; our $VERSION = qv( '1.9' );
 
 use File::Spec::Functions qw(catfile);
 use Module::Build;
@@ -57,9 +57,9 @@ sub __get_build_class { # Which subclass of M::B should we create?
 
    -f $path or return 'Module::Build';
 
-   open( my $fh, '<', $path ) or whimper "File ${path} cannot open: ${!}";
+   open my $fh, '<', $path or whimper "File ${path} cannot open: ${!}";
 
-   my $code = do { local $/ = undef; <$fh> }; close( $fh );
+   my $code = do { local $/ = undef; <$fh> }; close $fh;
 
    return Module::Build->subclass( code => $code );
 }
@@ -72,16 +72,9 @@ sub __get_cleanup_list {
 }
 
 sub __get_git_repository {
-   my ($repo, $vcs); require Git::Class;
-
-   $vcs = Git::Class::Worktree->new( path => q(.) )
-      and $repo = (split q( ), (map  { s{ : }{/}mx; s{ @ }{://}mx; $_ }
-                                grep { m{ \A origin \s+ .+ fetch }mx }
-                                split  m{ [\n]  }mx,
-                                $vcs->git( qw(remote -v) ))[ 0 ] || q())[ 1 ]
-      and return $repo;
-
-   return;
+   return (split q( ), (map  { s{ : }{/}mx; s{ @ }{://}mx; $_ }
+                        grep { m{ \A origin }mx }
+                           qx{ git remote -v 2>/dev/null })[ 0 ] || q())[ 1 ];
 }
 
 sub __get_no_index {
@@ -107,8 +100,8 @@ sub __get_notes {
 sub __get_repository { # Accessor for the VCS repository information
    my $repo;
 
-   -d q(.svn) and $repo = __get_svn_repository() and return $repo;
    -d q(.git) and $repo = __get_git_repository() and return $repo;
+   -d q(.svn) and $repo = __get_svn_repository() and return $repo;
 
    return;
 }
@@ -133,14 +126,9 @@ sub __get_resources {
 }
 
 sub __get_svn_repository {
-   my ($info, $repo, $vcs); require SVN::Class;
-
-   $vcs = SVN::Class::svn_dir( q(.) )
-      and $info = $vcs->info
-      and $repo = ($info->root !~ m{ \A file: }mx) ? $info->root : undef
-      and return $repo;
-
-   return;
+   return (grep { ! m{ \A file: }mx }
+           (split q( ), (grep { m{ \A URL: }mx }
+                            qx{ svn info })[ 0 ])[ 1 ])[ 0 ];
 }
 
 1;
