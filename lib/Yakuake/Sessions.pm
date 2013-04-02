@@ -1,8 +1,8 @@
-# @(#)Ident: Sessions.pm 2013-03-29 00:25 pjf ;
+# @(#)Ident: Sessions.pm 2013-04-02 18:43 pjf ;
 
 package Yakuake::Sessions;
 
-use version; our $VERSION = qv( sprintf '0.1.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.1.%d', q$Rev: 4 $ =~ /\d+/gmx );
 
 use Class::Usul::Moose;
 use Class::Usul::Constants;
@@ -324,7 +324,7 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 =head1 Version
 
-0.1.$Revision: 1 $
+0.1.$Revision: 4 $
 
 =head1 Synopsis
 

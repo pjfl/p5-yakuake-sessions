@@ -1,4 +1,7 @@
 Revision history for Yakuake::Sessions
 
+0.1.4  2013-04-02
+       - Updated .gitpre-commit to use global revision number
+
 0.1    2012-11-04 03:43:11
        - Initial Release
