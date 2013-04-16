@@ -1,8 +1,8 @@
-# @(#)Ident: Sessions.pm 2013-04-02 18:43 pjf ;
+# @(#)Ident: Sessions.pm 2013-04-16 22:44 pjf ;
 
 package Yakuake::Sessions;
 
-use version; our $VERSION = qv( sprintf '0.1.%d', q$Rev: 5 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.1.%d', q$Rev: 6 $ =~ /\d+/gmx );
 
 use Class::Usul::Moose;
 use Class::Usul::Constants;
@@ -318,19 +318,25 @@ __END__
 
 =pod
 
+=encoding utf8
+
 =head1 Name
 
 Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 =head1 Version
 
-0.1.$Revision: 5 $
+This documents version v0.1.$Rev: 6 $ of L<Yakuake::Sessions>
 
 =head1 Synopsis
 
-   use Yakuake::Sessions;
+   # To reduce typing define some shell aliases
+   alias ep='yakuake_session edit_project ; \
+             yakuake_session set_tab_title_for_project'
+   alias ys='yakuake_session'
 
-   exit Yakuake::Sessions->new_with_options( nodebug => 1 )->run;
+   # Command line help
+   ys -? | -H | -h [sub-command] | list_methods | dump_self
 
 =head1 Description
 

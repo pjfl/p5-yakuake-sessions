@@ -4,13 +4,17 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 # Version
 
-0.1.$Revision: 5 $
+This documents version v0.1.$Rev: 6 $ of [Yakuake::Sessions](https://metacpan.org/module/Yakuake::Sessions)
 
 # Synopsis
 
-    use Yakuake::Sessions;
+    # To reduce typing define some shell aliases
+    alias ep='yakuake_session edit_project ; \
+              yakuake_session set_tab_title_for_project'
+    alias ys='yakuake_session'
 
-    exit Yakuake::Sessions->new_with_options( nodebug => 1 )->run;
+    # Command line help
+    ys -? | -H | -h [sub-command] | list_methods | dump_self
 
 # Description
 

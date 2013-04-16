@@ -1,6 +1,7 @@
 Revision history for Yakuake::Sessions
 
-0.1.5     2013-04-16 23:37:15
+0.1.6     2013-04-16 23:49:35
+          Updated documentation
           Updated inc::Bob to v1.12
           Updated .gitpre-commit to use global revision number
 
