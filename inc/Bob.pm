@@ -1,4 +1,4 @@
-# @(#)Ident: Bob.pm 2013-04-01 14:34 pjf ;
+# @(#)Ident: Bob.pm 2013-04-15 15:23 pjf ;
 
 package Bob;
 
@@ -10,7 +10,7 @@ sub whimper { print {*STDOUT} $_[ 0 ]."\n"; exit 0 }
 
 BEGIN { my $reason; $reason = CPANTesting::should_abort and whimper $reason; }
 
-use version; our $VERSION = qv( '1.9' );
+use version; our $VERSION = qv( '1.12' );
 
 use File::Spec::Functions qw(catfile);
 use Module::Build;
@@ -41,7 +41,8 @@ sub new {
         notes              => __get_notes( $p ),
         recommends         => $p->{recommends},
         requires           => $p->{requires},
-        sign               => defined $p->{sign} ? $p->{sign} : 1, );
+        sign               => defined $p->{sign} ? $p->{sign} : 1,
+        share_dir          => __get_share_dir( $p ), );
 }
 
 # Private functions
@@ -80,7 +81,7 @@ sub __get_git_repository {
 sub __get_no_index {
    my $p = shift;
 
-   return { directory => $p->{no_index_dir} || [ qw(examples inc t) ] };
+   return { directory => $p->{no_index_dir} || [ qw(examples inc share t) ] };
 }
 
 sub __get_notes {
@@ -93,6 +94,8 @@ sub __get_notes {
    $notes->{is_cpan_testing  } = CPANTesting::is_testing();
    # Add a note to stop CPAN testing if requested in Build.PL
    $notes->{stop_tests       } = CPANTesting::test_exceptions( $p );
+   $notes->{url_prefix       } = defined $p->{url_prefix} ? $p->{url_prefix}
+                               : q(https://metacpan.org/module/);
    $notes->{version          } = $VERSION;
    return $notes;
 }
@@ -123,6 +126,12 @@ sub __get_resources {
       and $resources->{repository} = $repo;
 
    return { resources => $resources };
+}
+
+sub __get_share_dir {
+   my $p = shift; defined $p->{share_dir} and return $p->{share_dir};
+
+   return -d q(share) ? q(share) : undef;
 }
 
 sub __get_svn_repository {

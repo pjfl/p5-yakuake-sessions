@@ -4,7 +4,7 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 # Version
 
-0.1.$Revision: 1 $
+0.1.$Revision: 5 $
 
 # Synopsis
 
@@ -115,8 +115,8 @@ None
 
 # Dependencies
 
-- [Class::Usul](http://search.cpan.org/perldoc?Class::Usul)
-- [File::DataClass](http://search.cpan.org/perldoc?File::DataClass)
+- [Class::Usul](https://metacpan.org/module/Class::Usul)
+- [File::DataClass](https://metacpan.org/module/File::DataClass)
 
 # Incompatibilities
 
@@ -137,14 +137,14 @@ Larry Wall - For the Perl programming language
 
 # Author
 
-Peter Flanigan, `<Support at RoxSoft dot co dot uk>`
+Peter Flanigan, `<pjfl@cpan.org>`
 
 # License and Copyright
 
 Copyright (c) 2013 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself. See [perlartistic](http://search.cpan.org/perldoc?perlartistic)
+under the same terms as Perl itself. See [perlartistic](https://metacpan.org/module/perlartistic)
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT WARRANTY; without even the implied warranty of

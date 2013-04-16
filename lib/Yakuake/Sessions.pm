@@ -2,7 +2,7 @@
 
 package Yakuake::Sessions;
 
-use version; our $VERSION = qv( sprintf '0.1.%d', q$Rev: 4 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.1.%d', q$Rev: 5 $ =~ /\d+/gmx );
 
 use Class::Usul::Moose;
 use Class::Usul::Constants;
@@ -324,7 +324,7 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 =head1 Version
 
-0.1.$Revision: 4 $
+0.1.$Revision: 5 $
 
 =head1 Synopsis
 
@@ -466,7 +466,7 @@ Larry Wall - For the Perl programming language
 
 =head1 Author
 
-Peter Flanigan, C<< <Support at RoxSoft dot co dot uk> >>
+Peter Flanigan, C<< <pjfl@cpan.org> >>
 
 =head1 License and Copyright
 
