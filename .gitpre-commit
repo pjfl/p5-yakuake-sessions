@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-# @(#)Ident: gitpre-commit 2013-04-12 11:26 pjf ;
+# @(#)Ident: gitpre-commit 2013-04-21 13:58 pjf ;
 
 use strict;
 use warnings;
@@ -28,6 +28,15 @@ sub __write_data_to ($$) {
    print {$fh} $data; close $fh; return;
 }
 
+sub __get_module_from ($) {
+   return
+      (map    { s{ [-] }{::}gmx; $_ }
+       map    { m{ \A [q\'\"] }mx ? eval $_ : $_ }
+       map    { m{ \A \s* (?:module|name) \s+ [=]?[>]? \s* ([^,;]+) [,;]? }imx }
+       grep   { m{ \A \s*   (module|name) }imx }
+       split m{ [\n] }mx, $_[ 0 ])[ 0 ];
+}
+
 sub __get_ignore_rev_regex () {
    my $ignore_rev_file = '.gitignore-rev'; -f $ignore_rev_file or return;
 
@@ -38,16 +47,12 @@ sub __get_ignore_rev_regex () {
 
 my ($module, $rev, $rev_file);
 
-my $project_file = -f 'Build.PL'    ? 'Build.PL'    :
+my $project_file = -f 'dist.ini'    ? 'dist.ini'    :
+                   -f 'Build.PL'    ? 'Build.PL'    :
                    -f 'Makefile.PL' ? 'Makefile.PL' : undef;
 
 if (defined $project_file) {
-   my $content  = __read_all_from $project_file;
-
-   $module = (map    { eval $_ }
-              map    { m{ \A \s* (?:module|name) \s* => \s* (.+) [,] }imx }
-              grep   { m{ \A \s*   (module|name) }imx }
-              split m{ [\n] }mx, $content)[ 0 ];
+   $module = __get_module_from __read_all_from $project_file;
 
    my $distname = lc $module; $distname =~ s{ :: }{-}gmx;
 

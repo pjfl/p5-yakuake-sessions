@@ -1,8 +1,8 @@
-# @(#)Ident: Sessions.pm 2013-04-16 22:44 pjf ;
+# @(#)Ident: Sessions.pm 2013-04-22 17:01 pjf ;
 
 package Yakuake::Sessions;
 
-use version; our $VERSION = qv( sprintf '0.1.%d', q$Rev: 6 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.2.%d', q$Rev: 7 $ =~ /\d+/gmx );
 
 use Class::Usul::Moose;
 use Class::Usul::Constants;
@@ -168,8 +168,10 @@ sub _build_config_dir {
 }
 
 sub _build_project_file {
-   return -f 'Build.PL' ? 'Build.PL' : -f 'Makefile.PL' ? 'Makefile.PL'
-        : throw 'Project file Build.PL or Makefile.PL not found';
+   return -f 'dist.ini'    ? 'dist.ini'    :
+          -f 'Build.PL'    ? 'Build.PL'    :
+          -f 'Makefile.PL' ? 'Makefile.PL' :
+          throw 'Project file Build.PL or Makefile.PL not found';
 }
 
 sub _clear_sessions {
@@ -326,7 +328,7 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 =head1 Version
 
-This documents version v0.1.$Rev: 6 $ of L<Yakuake::Sessions>
+This documents version v0.2.$Rev: 7 $ of L<Yakuake::Sessions>
 
 =head1 Synopsis
 

@@ -1,18 +1,19 @@
 #!/usr/bin/env perl
-# @(#)Ident: yakuake_session 2013-03-29 00:33 pjf ;
+# @(#)Ident: yakuake_session 2013-04-21 01:54 pjf ;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.1.%d', q$Rev: 2 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.1.%d', q$Rev: 7 $ =~ /\d+/gmx );
 
 use Yakuake::Sessions;
 
-exit Yakuake::Sessions->new_with_options
-   ( appclass => 'Yakuake::Sessions', nodebug => 1 )->run;
+exit Yakuake::Sessions->new_with_options( nodebug => 1 )->run;
 
 __END__
 
 =pod
+
+=encoding utf8
 
 =head1 NAME
 
@@ -38,7 +39,7 @@ Lists the methods available in this program
 
 =head1 VERSION
 
-0.1.$Rev: 2 $
+0.1.$Rev: 7 $
 
 =head1 DESCRIPTION
 
