@@ -4,7 +4,7 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 # Version
 
-This documents version v0.1.$Rev: 6 $ of [Yakuake::Sessions](https://metacpan.org/module/Yakuake::Sessions)
+This documents version v0.2.$Rev: 8 $ of [Yakuake::Sessions](https://metacpan.org/module/Yakuake::Sessions)
 
 # Synopsis
 
@@ -12,6 +12,28 @@ This documents version v0.1.$Rev: 6 $ of [Yakuake::Sessions](https://metacpan.or
     alias ep='yakuake_session edit_project ; \
               yakuake_session set_tab_title_for_project'
     alias ys='yakuake_session'
+
+    # Create some Yakuake sessions. Set each session to a different directory.
+    # Run some commands in some of the sessions like an HTTP web development
+    # server or tail -f on a log file. Set the tab titles for each session.
+    # Now create a profile called development
+    ys create development
+
+    # To reduce typing create an alias
+    alias ysld='cd ; nohup yakuake_session load development \
+       1>~/.yakuake-sessions/nohup.out 2>&1'
+
+    # Subsequently reload the development profile
+    ysld
+
+    # Edit the project master file
+    ep
+
+    # Show the contents of the development profile
+    ys show development
+
+    # Edit the contents of the development profile
+    ys edit development
 
     # Command line help
     ys -? | -H | -h [sub-command] | list_methods | dump_self
@@ -38,7 +60,8 @@ Defines the following list of attributes;
 
 - `project_file`
 
-    Project master file
+    Project master file, defaults to one of; `dist.ini`, `Build.PL`, or
+    `Makefile.PL`
 
 - `storage_class`
 

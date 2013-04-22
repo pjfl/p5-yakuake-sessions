@@ -1,6 +1,7 @@
 Revision history for Yakuake::Sessions
 
-0.2.7     2013-04-22 18:04:52
+0.2.8     2013-04-22 19:55:10
+          - Improved synopsis
           - Added dist.ini to list of project files
 
 0.1.6     2013-04-16 23:49:35

@@ -1,8 +1,8 @@
-# @(#)Ident: Sessions.pm 2013-04-22 17:01 pjf ;
+# @(#)Ident: Sessions.pm 2013-04-22 18:53 pjf ;
 
 package Yakuake::Sessions;
 
-use version; our $VERSION = qv( sprintf '0.2.%d', q$Rev: 7 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.2.%d', q$Rev: 8 $ =~ /\d+/gmx );
 
 use Class::Usul::Moose;
 use Class::Usul::Constants;
@@ -12,6 +12,8 @@ use English                      qw(-no_match_vars);
 use File::DataClass::Constraints qw(Directory Path);
 
 extends q(Class::Usul::Programs);
+
+# Public attributes
 
 has 'dbus'          => is => 'ro',   isa => ArrayRef[NonEmptySimpleStr],
    documentation    => 'Qt communication interface and service name',
@@ -31,8 +33,6 @@ has 'profile_dir'   => is => 'lazy', isa => Path, coerce => TRUE,
 has 'project_file'  => is => 'lazy', isa => NonEmptySimpleStr,
    documentation    => 'Project master file';
 
-has '_extensions'   => is => 'lazy', isa => HashRef, reader => 'extensions';
-
 has 'storage_class' => is => 'ro',   isa => NonEmptySimpleStr,
    documentation    => 'File format used to store session data',
    traits           => [ 'Getopt' ], cmd_aliases => q(F), cmd_flag => 'format',
@@ -41,6 +41,10 @@ has 'storage_class' => is => 'ro',   isa => NonEmptySimpleStr,
 has 'tab_title'     => is => 'ro',   isa => NonEmptySimpleStr,
    documentation    => 'Default title to apply to tabs',
    default          => 'Oo.!.oO';
+
+# Private attributes
+
+has '_extensions'   => is => 'lazy', isa => HashRef, reader => 'extensions';
 
 around 'run' => sub {
    my ($next, $self) = @_; $self->quiet( TRUE ); return $self->$next();
@@ -107,11 +111,11 @@ sub load : method {
 
    $self->debug and $self->dumper( $session_tabs );
 
-   $self->_clear_sessions; sleep 3;
+   $self->_clear_sessions; sleep $self->config->no_thrash;
 
    $self->_yakuake_sessions( q(addSession) ) for (1 .. $#{ $session_tabs });
 
-   sleep 3; my $active = FALSE; my $term_id = 0;
+   sleep $self->config->no_thrash; my $active = FALSE; my $term_id = 0;
 
    for my $tab (@{ $session_tabs }) {
       my $sess_id = int $self->_yakuake_tabs( q(sessionAtTab), $term_id++ );
@@ -171,7 +175,7 @@ sub _build_project_file {
    return -f 'dist.ini'    ? 'dist.ini'    :
           -f 'Build.PL'    ? 'Build.PL'    :
           -f 'Makefile.PL' ? 'Makefile.PL' :
-          throw 'Project file Build.PL or Makefile.PL not found';
+          throw 'Project file dist.ini, Build.PL, or Makefile.PL not found';
 }
 
 sub _clear_sessions {
@@ -328,7 +332,7 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 =head1 Version
 
-This documents version v0.2.$Rev: 7 $ of L<Yakuake::Sessions>
+This documents version v0.2.$Rev: 8 $ of L<Yakuake::Sessions>
 
 =head1 Synopsis
 
@@ -336,6 +340,28 @@ This documents version v0.2.$Rev: 7 $ of L<Yakuake::Sessions>
    alias ep='yakuake_session edit_project ; \
              yakuake_session set_tab_title_for_project'
    alias ys='yakuake_session'
+
+   # Create some Yakuake sessions. Set each session to a different directory.
+   # Run some commands in some of the sessions like an HTTP web development
+   # server or tail -f on a log file. Set the tab titles for each session.
+   # Now create a profile called development
+   ys create development
+
+   # To reduce typing create an alias
+   alias ysld='cd ; nohup yakuake_session load development \
+      1>~/.yakuake-sessions/nohup.out 2>&1'
+
+   # Subsequently reload the development profile
+   ysld
+
+   # Edit the project master file
+   ep
+
+   # Show the contents of the development profile
+   ys show development
+
+   # Edit the contents of the development profile
+   ys edit development
 
    # Command line help
    ys -? | -H | -h [sub-command] | list_methods | dump_self
@@ -364,7 +390,8 @@ Directory to store the session profiles in
 
 =item C<project_file>
 
-Project master file
+Project master file, defaults to one of; F<dist.ini>, F<Build.PL>, or
+F<Makefile.PL>
 
 =item C<storage_class>
 
