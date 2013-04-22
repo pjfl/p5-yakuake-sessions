@@ -1,5 +1,5 @@
-# @(#)Ident: 01always_pass.t 2013-03-27 23:42 pjf ;
-# Bob-Version: 1.8
+# @(#)Ident: 01always_pass.t 2013-04-22 22:47 pjf ;
+# Bob-Version: 1.12
 
 use strict;
 use warnings;
