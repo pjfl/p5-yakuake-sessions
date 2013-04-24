@@ -1,6 +1,7 @@
 Revision history for Yakuake::Sessions
 
 0.2.8     2013-04-22 19:55:10
+          - Fixed version number in yakuake_session
           - Author tests now detect using env variable
           - Improved synopsis
           - Added dist.ini to list of project files
