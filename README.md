@@ -4,7 +4,7 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 # Version
 
-This documents version v0.2.$Rev: 8 $ of [Yakuake::Sessions](https://metacpan.org/module/Yakuake::Sessions)
+This documents version v0.3.$Rev: 1 $ of [Yakuake::Sessions](https://metacpan.org/module/Yakuake::Sessions)
 
 # Synopsis
 
@@ -75,19 +75,19 @@ Defines the following list of attributes;
 
 ## create
 
-    $exit_code = $self->create;
+    yakuake_session create <profile_name>
 
 Creates a new session profile in the `profile\_dir`. Calls ["dump"](#dump)
 
 ## delete
 
-    $exit_code = $self->delete;
+    yakuake_session delete <profile_name>
 
 Deletes the specified session profile
 
 ## dump
 
-    $exit_code = $self->dump;
+    yakuake_session dump <path>
 
 Dumps the current sessions to file. For each tab it captures the
 current working directory, the command being executed, the tab title text,
@@ -95,44 +95,44 @@ and which tab is currently active
 
 ## edit
 
-    $exit_code = $self->edit;
+    yakuake_session edit <profile_name>
 
 Edit a session profile
 
 ## edit\_project
 
-    $exit_code = $self->edit_project;
+    yakuake_session edit_project
 
 Edit the profile file for the project in the current directory
 
 ## list
 
-    $exit_code = $self->list;
+    yakuake_session list
 
 List the session profiles stored in the `profile\_dir`
 
 ## load
 
-    $exit_code = $self->load;
+    yakuake_session load <profile_name>
 
 Load the specified profile, recreating the tabs with their title text,
 current working directories and executing commands
 
 ## set\_tab\_title
 
-    $exit_code = $self->set_tab_title;
+    yakuake_session set_tab_title
 
 Sets the current tabs title text to the specified value
 
 ## set\_tab\_title\_for\_project
 
-    $exit_code = $self->set_tab_title_for_project;
+    yakuake_session set_tab_title_for_project
 
 Set the current tabs title text to the default value for the current project
 
 ## show
 
-    $exit_code = $self->show;
+    yakuake_session show <profile_name>
 
 Display the contents of the specified session profile
 
@@ -154,9 +154,10 @@ None
 It is necessary to edit new session profiles and manually escape the shell
 meta characters embeded in the executing commands
 
-There are no known bugs in this module.
-Please report problems to the address below.
-Patches are welcome
+There are no known bugs in this module.Please report problems to
+http://rt.cpan.org/NoAuth/Bugs.html?Dist=Yakuake-Sessions. Source code
+is on Github git://github.com/pjfl/Yakuake-Sessions.git. Patches and
+pull requests are welcome
 
 # Acknowledgements
 

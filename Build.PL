@@ -1,9 +1,9 @@
-# @(#)Ident: Build.PL 2013-04-22 16:53 pjf ;
+# @(#)Ident: Build.PL 2013-04-25 03:04 pjf ;
 
 use strict;
 use warnings;
 use inc::Bob; # Module::Build subclass
-use version; our $VERSION = qv( sprintf '0.2.%d', q$Rev: 7 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 Bob->new( {
    module    => q(Yakuake::Sessions),
@@ -25,8 +25,8 @@ Bob->new( {
 } )->create_build_script; # Goal!
 
 # Local Variables:
-# tab-title: Sessions
-# eval: (load-project-state "yakuake-sessions")
 # mode: perl
+# eval: (load-project-state "yakuake-sessions")
+# tab-title: Sessions
 # tab-width: 3
 # End:

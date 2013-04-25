@@ -1,8 +1,8 @@
-# @(#)Ident: Sessions.pm 2013-04-22 18:53 pjf ;
+# @(#)Ident: Sessions.pm 2013-04-25 02:58 pjf ;
 
 package Yakuake::Sessions;
 
-use version; our $VERSION = qv( sprintf '0.2.%d', q$Rev: 8 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Class::Usul::Moose;
 use Class::Usul::Constants;
@@ -332,7 +332,7 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 =head1 Version
 
-This documents version v0.2.$Rev: 8 $ of L<Yakuake::Sessions>
+This documents version v0.3.$Rev: 1 $ of L<Yakuake::Sessions>
 
 =head1 Synopsis
 
@@ -407,19 +407,19 @@ Default title to apply to tabs
 
 =head2 create
 
-   $exit_code = $self->create;
+   yakuake_session create <profile_name>
 
 Creates a new session profile in the F<profile_dir>. Calls L</dump>
 
 =head2 delete
 
-   $exit_code = $self->delete;
+   yakuake_session delete <profile_name>
 
 Deletes the specified session profile
 
 =head2 dump
 
-   $exit_code = $self->dump;
+   yakuake_session dump <path>
 
 Dumps the current sessions to file. For each tab it captures the
 current working directory, the command being executed, the tab title text,
@@ -427,44 +427,44 @@ and which tab is currently active
 
 =head2 edit
 
-   $exit_code = $self->edit;
+   yakuake_session edit <profile_name>
 
 Edit a session profile
 
 =head2 edit_project
 
-   $exit_code = $self->edit_project;
+   yakuake_session edit_project
 
 Edit the profile file for the project in the current directory
 
 =head2 list
 
-   $exit_code = $self->list;
+   yakuake_session list
 
 List the session profiles stored in the F<profile_dir>
 
 =head2 load
 
-   $exit_code = $self->load;
+   yakuake_session load <profile_name>
 
 Load the specified profile, recreating the tabs with their title text,
 current working directories and executing commands
 
 =head2 set_tab_title
 
-   $exit_code = $self->set_tab_title;
+   yakuake_session set_tab_title
 
 Sets the current tabs title text to the specified value
 
 =head2 set_tab_title_for_project
 
-   $exit_code = $self->set_tab_title_for_project;
+   yakuake_session set_tab_title_for_project
 
 Set the current tabs title text to the default value for the current project
 
 =head2 show
 
-   $exit_code = $self->show;
+   yakuake_session show <profile_name>
 
 Display the contents of the specified session profile
 
@@ -491,9 +491,10 @@ None
 It is necessary to edit new session profiles and manually escape the shell
 meta characters embeded in the executing commands
 
-There are no known bugs in this module.
-Please report problems to the address below.
-Patches are welcome
+There are no known bugs in this module.Please report problems to
+http://rt.cpan.org/NoAuth/Bugs.html?Dist=Yakuake-Sessions. Source code
+is on Github git://github.com/pjfl/Yakuake-Sessions.git. Patches and
+pull requests are welcome
 
 =head1 Acknowledgements
 
