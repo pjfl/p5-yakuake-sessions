@@ -4,7 +4,7 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 # Version
 
-This documents version v0.3.$Rev: 1 $ of [Yakuake::Sessions](https://metacpan.org/module/Yakuake::Sessions)
+This documents version v0.3.$Rev: 2 $ of [Yakuake::Sessions](https://metacpan.org/module/Yakuake::Sessions)
 
 # Synopsis
 
@@ -103,7 +103,8 @@ Edit a session profile
 
     yakuake_session edit_project
 
-Edit the profile file for the project in the current directory
+Edit the project file (one of; `dist.ini`, `Build.PL`, or
+`Makefile.PL`) in the current directory
 
 ## list
 

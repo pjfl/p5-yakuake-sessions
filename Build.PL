@@ -1,9 +1,9 @@
-# @(#)Ident: Build.PL 2013-04-25 03:04 pjf ;
+# @(#)Ident: Build.PL 2013-04-25 11:56 pjf ;
 
 use strict;
 use warnings;
 use inc::Bob; # Module::Build subclass
-use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 2 $ =~ /\d+/gmx );
 
 Bob->new( {
    module    => q(Yakuake::Sessions),
@@ -22,6 +22,7 @@ Bob->new( {
    build_requires        => {
       'Exception::Class' => 1.23,
       'Test::More'       => 0.74, },
+   no_index_dir          => [ qw(bin examples inc share t) ],
 } )->create_build_script; # Goal!
 
 # Local Variables:

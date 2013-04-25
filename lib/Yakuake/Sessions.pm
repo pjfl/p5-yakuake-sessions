@@ -1,8 +1,8 @@
-# @(#)Ident: Sessions.pm 2013-04-25 02:58 pjf ;
+# @(#)Ident: Sessions.pm 2013-04-25 12:31 pjf ;
 
 package Yakuake::Sessions;
 
-use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 2 $ =~ /\d+/gmx );
 
 use Class::Usul::Moose;
 use Class::Usul::Constants;
@@ -332,7 +332,7 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 =head1 Version
 
-This documents version v0.3.$Rev: 1 $ of L<Yakuake::Sessions>
+This documents version v0.3.$Rev: 2 $ of L<Yakuake::Sessions>
 
 =head1 Synopsis
 
@@ -435,7 +435,8 @@ Edit a session profile
 
    yakuake_session edit_project
 
-Edit the profile file for the project in the current directory
+Edit the project file (one of; F<dist.ini>, F<Build.PL>, or
+F<Makefile.PL>) in the current directory
 
 =head2 list
 
