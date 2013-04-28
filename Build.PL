@@ -1,9 +1,9 @@
-# @(#)Ident: Build.PL 2013-04-25 11:56 pjf ;
+# @(#)Ident: Build.PL 2013-04-26 19:47 pjf ;
 
 use strict;
 use warnings;
 use inc::Bob; # Module::Build subclass
-use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 2 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 3 $ =~ /\d+/gmx );
 
 Bob->new( {
    module    => q(Yakuake::Sessions),
@@ -11,7 +11,7 @@ Bob->new( {
    requires  => {
       'perl'             => 5.010,
       'version'          => 0.77,
-      'Class::Usul'      => q(0.14.0),
+      'Class::Usul'      => q(0.15.0),
       'File::DataClass'  => q(0.16.0), },
    recommends            => {
       'App::cpanminus'   => 1.6005,

@@ -1,6 +1,7 @@
 Revision history for Yakuake::Sessions
 
-0.3.2     2013-04-25 13:32:20
+0.3.3     2013-04-28 23:49:06
+          - Stopped Treptow CPAN Testing - 7ec294fe-b005-11e2-91e1-3039f74438b4
           - Updated POD
           - Updated POD
 
