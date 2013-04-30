@@ -2,7 +2,7 @@
 
 package Yakuake::Sessions;
 
-use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 3 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 5 $ =~ /\d+/gmx );
 
 use Class::Usul::Moose;
 use Class::Usul::Constants;
@@ -332,7 +332,7 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 =head1 Version
 
-This documents version v0.3.$Rev: 3 $ of L<Yakuake::Sessions>
+This documents version v0.3.$Rev: 5 $ of L<Yakuake::Sessions>
 
 =head1 Synopsis
 
@@ -368,7 +368,8 @@ This documents version v0.3.$Rev: 3 $ of L<Yakuake::Sessions>
 
 =head1 Description
 
-Create, edit, load session profiles for the Yakuake Terminal Emulator
+Create, edit, load session profiles for the Yakuake Terminal Emulator. Sets
+and manages the tab title text
 
 =head1 Configuration and Environment
 
