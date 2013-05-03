@@ -4,7 +4,7 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 # Version
 
-This documents version v0.3.$Rev: 2 $ of [Yakuake::Sessions](https://metacpan.org/module/Yakuake::Sessions)
+This documents version v0.4.$Rev: 1 $ of [Yakuake::Sessions](https://metacpan.org/module/Yakuake::Sessions)
 
 # Synopsis
 
@@ -40,7 +40,8 @@ This documents version v0.3.$Rev: 2 $ of [Yakuake::Sessions](https://metacpan.or
 
 # Description
 
-Create, edit, load session profiles for the Yakuake Terminal Emulator
+Create, edit, load session profiles for the Yakuake Terminal Emulator. Sets
+and manages the tab title text
 
 # Configuration and Environment
 
@@ -57,11 +58,6 @@ Defines the following list of attributes;
 - `profile_dir`
 
     Directory to store the session profiles in
-
-- `project_file`
-
-    Project master file, defaults to one of; `dist.ini`, `Build.PL`, or
-    `Makefile.PL`
 
 - `storage_class`
 
@@ -98,13 +94,6 @@ and which tab is currently active
     yakuake_session edit <profile_name>
 
 Edit a session profile
-
-## edit\_project
-
-    yakuake_session edit_project
-
-Edit the project file (one of; `dist.ini`, `Build.PL`, or
-`Makefile.PL`) in the current directory
 
 ## list
 

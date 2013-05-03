@@ -1,4 +1,4 @@
-# @(#)Ident: Bob.pm 2013-04-15 15:23 pjf ;
+# @(#)Ident: Bob.pm 2013-05-03 14:45 pjf ;
 
 package Bob;
 
@@ -10,7 +10,7 @@ sub whimper { print {*STDOUT} $_[ 0 ]."\n"; exit 0 }
 
 BEGIN { my $reason; $reason = CPANTesting::should_abort and whimper $reason; }
 
-use version; our $VERSION = qv( '1.12' );
+use version; our $VERSION = qv( '1.13' );
 
 use File::Spec::Functions qw(catfile);
 use Module::Build;
@@ -68,7 +68,7 @@ sub __get_build_class { # Which subclass of M::B should we create?
 sub __get_cleanup_list {
    my $p = shift; my $distname = shift;
 
-   return [ q(Debian_CPANTS.txt), "${distname}-*",
+   return [ q(Debian_CPANTS.txt), q(MANIFEST.bak), "${distname}-*",
             map { ( q(*/) x $_ ).q(*~) } 0..5 ];
 }
 

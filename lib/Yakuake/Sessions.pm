@@ -1,12 +1,12 @@
-# @(#)Ident: Sessions.pm 2013-04-28 22:48 pjf ;
+# @(#)Ident: Sessions.pm 2013-05-03 19:30 pjf ;
 
 package Yakuake::Sessions;
 
-use version; our $VERSION = qv( sprintf '0.3.%d', q$Rev: 5 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.4.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Class::Usul::Moose;
 use Class::Usul::Constants;
-use Class::Usul::Functions       qw(say throw trim zip);
+use Class::Usul::Functions       qw(class2appdir say throw trim zip);
 use Cwd                          qw(getcwd);
 use English                      qw(-no_match_vars);
 use File::DataClass::Constraints qw(Directory Path);
@@ -14,7 +14,6 @@ use File::DataClass::Constraints qw(Directory Path);
 extends q(Class::Usul::Programs);
 
 # Public attributes
-
 has 'dbus'          => is => 'ro',   isa => ArrayRef[NonEmptySimpleStr],
    documentation    => 'Qt communication interface and service name',
    default          => sub { [ qw(qdbus org.kde.yakuake) ] };
@@ -30,9 +29,6 @@ has 'profile_dir'   => is => 'lazy', isa => Path, coerce => TRUE,
    documentation    => 'Directory to store the session profiles',
    default          => sub { [ $_[ 0 ]->config_dir, 'profiles' ] };
 
-has 'project_file'  => is => 'lazy', isa => NonEmptySimpleStr,
-   documentation    => 'Project master file';
-
 has 'storage_class' => is => 'ro',   isa => NonEmptySimpleStr,
    documentation    => 'File format used to store session data',
    traits           => [ 'Getopt' ], cmd_aliases => q(F), cmd_flag => 'format',
@@ -43,18 +39,18 @@ has 'tab_title'     => is => 'ro',   isa => NonEmptySimpleStr,
    default          => 'Oo.!.oO';
 
 # Private attributes
-
 has '_extensions'   => is => 'lazy', isa => HashRef, reader => 'extensions';
 
+# Construction
 around 'run' => sub {
    my ($next, $self) = @_; $self->quiet( TRUE ); return $self->$next();
 };
 
+# Public methods
 sub create : method {
    my $self = shift; my $path = $self->_get_profile_path;
 
    $path->assert_filepath; push @{ $self->extra_argv }, $path;
-
    return $self->dump;
 }
 
@@ -69,10 +65,9 @@ sub delete : method {
 sub dump : method {
    my $self = shift; my $path = $self->extra_argv->[ 0 ];
 
-   my $session_tabs = $self->_get_session_tabs;
+   my $session_tabs = $self->_dump_session_tabs;
 
    ($self->debug or not $path) and $self->dumper( $session_tabs );
-
    $path or return OK; $path = $self->io( $path );
 
    $path->is_file and $path->exists and not $self->force
@@ -91,13 +86,6 @@ sub edit : method {
    return OK;
 }
 
-sub edit_project : method {
-   my $self = shift; my $editor = $self->options->{editor} || q(emacs);
-
-   $self->run_cmd( $editor.SPC.$self->project_file, { async => TRUE } );
-   return OK;
-}
-
 sub list : method {
    my $self     = shift;
    my @suffixes = keys %{ $self->file->dataclass_schema->extensions };
@@ -107,10 +95,9 @@ sub list : method {
 }
 
 sub load : method {
-   my $self = shift; my $session_tabs = $self->_load;
+   my $self = shift; my $session_tabs = $self->_load_session_tabs;
 
    $self->debug and $self->dumper( $session_tabs );
-
    $self->_clear_sessions; sleep $self->config->no_thrash;
 
    $self->_yakuake_sessions( q(addSession) ) for (1 .. $#{ $session_tabs });
@@ -138,11 +125,11 @@ sub set_tab_title : method {
 }
 
 sub set_tab_title_for_project : method {
-   my $self = shift; my $file = $self->extra_argv->[ 0 ];
+   my $self = shift; $self->_set_project_for_tty;
 
-   $self->_set_project_for_tty;
-   $self->_set_tab_title( $self->_get_tab_title_from_file( $file ) );
-   return OK;
+   my $title = $self->extra_argv->[ 0 ] or throw 'No tab title';
+
+   $self->_set_tab_title( $title ); return OK;
 }
 
 sub show : method {
@@ -150,7 +137,6 @@ sub show : method {
 }
 
 # Private methods
-
 sub _build__extensions {
    my $self        = shift;
    my $assoc_table = $self->file->dataclass_schema->extensions;
@@ -164,18 +150,11 @@ sub _build__extensions {
 }
 
 sub _build_config_dir {
-   my $self = shift; my $path = [ $self->config->my_home, '.yakuake-sessions' ];
+   my $self = shift;
+   my $home = $self->config->my_home;
+   my $dir  = $self->io( [ $home, '.'.(class2appdir blessed $self) ] );
 
-   my $io   = $self->io( $path ); $io->exists or $io->mkpath;
-
-   return $io;
-}
-
-sub _build_project_file {
-   return -f 'dist.ini'    ? 'dist.ini'    :
-          -f 'Build.PL'    ? 'Build.PL'    :
-          -f 'Makefile.PL' ? 'Makefile.PL' :
-          throw 'Project file dist.ini, Build.PL, or Makefile.PL not found';
+   $dir->exists or $dir->mkpath; return $dir;
 }
 
 sub _clear_sessions {
@@ -186,6 +165,33 @@ sub _clear_sessions {
    }
 
    return;
+}
+
+sub _dump_session_tabs {
+   my $self        = shift;
+   my $active_sess = int $self->_yakuake_sessions( q(activeSessionId) );
+   my @term_ids    = split m{ , }mx,
+                        $self->_yakuake_sessions( q(terminalIdList) );
+   my $session_map = $self->_get_session_map;
+   my $tabs        = [];
+
+   for my $term_id (0 .. $#term_ids) {
+      my $sess_id  = int $self->_yakuake_tabs( q(sessionAtTab), $term_id );
+      my $ksess_id = $session_map->{ $sess_id }; defined $ksess_id or next;
+      my $ksess    = "/Sessions/${ksess_id}";
+      my $fgpid    = $self->_query_dbus( $ksess, q(foregroundProcessId) );
+      my $pid      = $self->_query_dbus( $ksess, q(processId) );
+
+      push @{ $tabs }, {
+         tab_no    => $term_id + 1,
+         active    => $sess_id == $active_sess,
+         cmd       => $self->_get_executing_command( $pid, $fgpid ),
+         cwd       => $self->_get_current_directory( $pid ),
+         title     => $self->_yakuake_tabs( q(tabTitle), $sess_id ),
+      };
+   }
+
+   return $tabs;
 }
 
 sub _get_current_directory {
@@ -235,42 +241,7 @@ sub _get_session_map {
    return { zip @sessions, @ksessions };
 }
 
-sub _get_session_tabs {
-   my $self        = shift;
-   my $active_sess = int $self->_yakuake_sessions( q(activeSessionId) );
-   my @term_ids    = split m{ , }mx,
-                        $self->_yakuake_sessions( q(terminalIdList) );
-   my $session_map = $self->_get_session_map;
-   my $tabs        = [];
-
-   for my $term_id (0 .. $#term_ids) {
-      my $sess_id  = int $self->_yakuake_tabs( q(sessionAtTab), $term_id );
-      my $ksess_id = $session_map->{ $sess_id }; defined $ksess_id or next;
-      my $ksess    = "/Sessions/${ksess_id}";
-      my $fgpid    = $self->_query_dbus( $ksess, q(foregroundProcessId) );
-      my $pid      = $self->_query_dbus( $ksess, q(processId) );
-
-      push @{ $tabs }, {
-         tab_no    => $term_id + 1,
-         active    => $sess_id == $active_sess,
-         cmd       => $self->_get_executing_command( $pid, $fgpid ),
-         cwd       => $self->_get_current_directory( $pid ),
-         title     => $self->_yakuake_tabs( q(tabTitle), $sess_id ),
-      };
-   }
-
-   return $tabs;
-}
-
-sub _get_tab_title_from_file {
-   my ($self, $file) = @_; $file ||= $self->project_file;
-
-   my $text = (grep { m{ tab-title: }msx } $self->io( $file )->getlines)[ -1 ];
-
-   return trim( (split m{ : }msx, $text || NUL, 2)[ 1 ] );
-}
-
-sub _load {
+sub _load_session_tabs {
    my $self = shift; my $path = $self->_get_profile_path;
 
    $path->exists and $path->is_file
@@ -281,7 +252,6 @@ sub _load {
       ( paths => [ $path ], storage_class => $self->storage_class )->{sessions};
 
    $session_tabs->[ 0 ] or throw 'No session tabs info found';
-
    return $session_tabs;
 }
 
@@ -332,7 +302,7 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 =head1 Version
 
-This documents version v0.3.$Rev: 5 $ of L<Yakuake::Sessions>
+This documents version v0.4.$Rev: 1 $ of L<Yakuake::Sessions>
 
 =head1 Synopsis
 
@@ -389,11 +359,6 @@ Overwrite the output file if it already exists
 
 Directory to store the session profiles in
 
-=item C<project_file>
-
-Project master file, defaults to one of; F<dist.ini>, F<Build.PL>, or
-F<Makefile.PL>
-
 =item C<storage_class>
 
 File format used to store session data. Defaults to C<JSON>
@@ -431,13 +396,6 @@ and which tab is currently active
    yakuake_session edit <profile_name>
 
 Edit a session profile
-
-=head2 edit_project
-
-   yakuake_session edit_project
-
-Edit the project file (one of; F<dist.ini>, F<Build.PL>, or
-F<Makefile.PL>) in the current directory
 
 =head2 list
 

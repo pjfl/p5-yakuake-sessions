@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-# @(#)Ident: yakuake_session_tt_cd 2013-03-29 00:33 pjf ;
+# @(#)Ident: yakuake_session_tt_cd 2013-05-03 16:08 pjf ;
 # Called from the alias for the cd shell builtin
 # Since its called each time you cd it must be small and fast
 
@@ -23,12 +23,15 @@ my $cfgd = catdir( $ENV{HOME}, '.yakuake-sessions' );
 
 my $path = catfile( $cfgd, 'project_'.$ENV{TTY} ); -f $path or exit 0;
 
-open( my $fh, '<', $path ) or die "Path ${path} cannot open: ${!}";
+open my $fh, '<', $path or die "Path ${path} cannot open: ${!}";
 
-my $appd = readline( $fh ); close( $fh ); $appd or exit 0; chomp $appd;
+my $appd = readline( $fh ); close $fh; $appd or exit 0; chomp $appd;
 
-pathcmp( $appd, getcwd ) < 0 or exit 0; unlink( $path );
+pathcmp( $appd, getcwd ) < 0 or exit 0; unlink $path;
 
-qx{ yakuake_session set_tab_title }; exit 0;
+require Yakuake::Sessions;
+
+exit Yakuake::Sessions->new_with_options
+   ( method => 'set_tab_title', nodebug => 1 )->run;
 
 __END__

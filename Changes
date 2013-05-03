@@ -1,6 +1,11 @@
 Revision history for Yakuake::Sessions
 
+0.4.1     2013-05-03 20:46:16
+          - Moved edit_project command to Module::Provision
+          - Improved performan of yakuake_session_tt_cd
+
 0.3.5     2013-04-30 14:24:14
+          - Update inc::Bob to v1.13
           - Updated POD
           - Bumped version numbers of C:U and F:DC
           - Stopped Treptow CPAN Testing - 7ec294fe-b005-11e2-91e1-3039f74438b4
