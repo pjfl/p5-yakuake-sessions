@@ -4,13 +4,11 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 # Version
 
-This documents version v0.4.$Rev: 1 $ of [Yakuake::Sessions](https://metacpan.org/module/Yakuake::Sessions)
+This documents version v0.4.$Rev: 2 $ of [Yakuake::Sessions](https://metacpan.org/module/Yakuake::Sessions)
 
 # Synopsis
 
     # To reduce typing define some shell aliases
-    alias ep='yakuake_session edit_project ; \
-              yakuake_session set_tab_title_for_project'
     alias ys='yakuake_session'
 
     # Create some Yakuake sessions. Set each session to a different directory.
@@ -25,9 +23,6 @@ This documents version v0.4.$Rev: 1 $ of [Yakuake::Sessions](https://metacpan.or
 
     # Subsequently reload the development profile
     ysld
-
-    # Edit the project master file
-    ep
 
     # Show the contents of the development profile
     ys show development

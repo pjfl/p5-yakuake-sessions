@@ -1,8 +1,8 @@
-# @(#)Ident: Sessions.pm 2013-05-03 19:30 pjf ;
+# @(#)Ident: Sessions.pm 2013-05-03 19:50 pjf ;
 
 package Yakuake::Sessions;
 
-use version; our $VERSION = qv( sprintf '0.4.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.4.%d', q$Rev: 2 $ =~ /\d+/gmx );
 
 use Class::Usul::Moose;
 use Class::Usul::Constants;
@@ -302,13 +302,11 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 =head1 Version
 
-This documents version v0.4.$Rev: 1 $ of L<Yakuake::Sessions>
+This documents version v0.4.$Rev: 2 $ of L<Yakuake::Sessions>
 
 =head1 Synopsis
 
    # To reduce typing define some shell aliases
-   alias ep='yakuake_session edit_project ; \
-             yakuake_session set_tab_title_for_project'
    alias ys='yakuake_session'
 
    # Create some Yakuake sessions. Set each session to a different directory.
@@ -323,9 +321,6 @@ This documents version v0.4.$Rev: 1 $ of L<Yakuake::Sessions>
 
    # Subsequently reload the development profile
    ysld
-
-   # Edit the project master file
-   ep
 
    # Show the contents of the development profile
    ys show development
