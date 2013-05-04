@@ -4,7 +4,7 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 # Version
 
-This documents version v0.4.$Rev: 2 $ of [Yakuake::Sessions](https://metacpan.org/module/Yakuake::Sessions)
+This documents version v0.4.$Rev: 3 $ of [Yakuake::Sessions](https://metacpan.org/module/Yakuake::Sessions)
 
 # Synopsis
 
@@ -14,21 +14,20 @@ This documents version v0.4.$Rev: 2 $ of [Yakuake::Sessions](https://metacpan.or
     # Create some Yakuake sessions. Set each session to a different directory.
     # Run some commands in some of the sessions like an HTTP web development
     # server or tail -f on a log file. Set the tab titles for each session.
-    # Now create a profile called development
-    ys create development
+    # Now create a profile called dev
+    ys create dev
 
-    # To reduce typing create an alias
-    alias ysld='cd ; nohup yakuake_session load development \
-       1>~/.yakuake-sessions/nohup.out 2>&1'
+    # Subsequently reload the dev profile
+    ys load dev
 
-    # Subsequently reload the development profile
-    ysld
+    # Show the contents of the dev profile
+    ys show dev
 
-    # Show the contents of the development profile
-    ys show development
+    # Edit the contents of the dev profile
+    ys edit dev
 
-    # Edit the contents of the development profile
-    ys edit development
+    # Delete the dev profile
+    ys delete dev
 
     # Command line help
     ys -? | -H | -h [sub-command] | list_methods | dump_self
@@ -39,6 +38,14 @@ Create, edit, load session profiles for the Yakuake Terminal Emulator. Sets
 and manages the tab title text
 
 # Configuration and Environment
+
+Reads configuration from `~/.yakuakue\_sessions/yakuake\_session.json` which
+might look like;
+
+    {
+       "doc_title": "Perl",
+       "tab_title": "Oo.!.oO"
+    }
 
 Defines the following list of attributes;
 
@@ -56,11 +63,13 @@ Defines the following list of attributes;
 
 - `storage_class`
 
-    File format used to store session data. Defaults to `JSON`
+    File format used to store session data. Defaults to the config class
+    value; `JSON`
 
 - `tab_title`
 
-    Default title to apply to tabs
+    Default title to apply to tabs. Defaults to the config class value;
+    `Shell`
 
 # Subroutines/Methods
 
@@ -105,15 +114,18 @@ current working directories and executing commands
 
 ## set\_tab\_title
 
-    yakuake_session set_tab_title
+    yakuake_session set_tab_title <title_text>
 
-Sets the current tabs title text to the specified value
+Sets the current tabs title text to the specified value. Defaults to the
+vale supplied in the configuration
 
 ## set\_tab\_title\_for\_project
 
-    yakuake_session set_tab_title_for_project
+    yakuake_session set_tab_title_for_project <title_text>
 
-Set the current tabs title text to the default value for the current project
+Set the current tabs title text to the specified value. Must supply a
+title text. Will save the project name for use by
+`yakuake_session_tt_cd`
 
 ## show
 
@@ -129,6 +141,7 @@ None
 
 - [Class::Usul](https://metacpan.org/module/Class::Usul)
 - [File::DataClass](https://metacpan.org/module/File::DataClass)
+- [Yakuake::Sessions::Config](https://metacpan.org/module/Yakuake::Sessions::Config)
 
 # Incompatibilities
 

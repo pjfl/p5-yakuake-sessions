@@ -1,17 +1,20 @@
-# @(#)Ident: Sessions.pm 2013-05-03 19:50 pjf ;
+# @(#)Ident: Sessions.pm 2013-05-04 22:32 pjf ;
 
 package Yakuake::Sessions;
 
-use version; our $VERSION = qv( sprintf '0.4.%d', q$Rev: 2 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.4.%d', q$Rev: 3 $ =~ /\d+/gmx );
 
 use Class::Usul::Moose;
 use Class::Usul::Constants;
-use Class::Usul::Functions       qw(class2appdir say throw trim zip);
+use Class::Usul::Functions       qw(app_prefix say throw trim zip);
 use Cwd                          qw(getcwd);
 use English                      qw(-no_match_vars);
 use File::DataClass::Constraints qw(Directory Path);
 
 extends q(Class::Usul::Programs);
+
+# Override defaults in base class
+has '+config_class' => default => sub { 'Yakuake::Sessions::Config' };
 
 # Public attributes
 has 'dbus'          => is => 'ro',   isa => ArrayRef[NonEmptySimpleStr],
@@ -32,11 +35,11 @@ has 'profile_dir'   => is => 'lazy', isa => Path, coerce => TRUE,
 has 'storage_class' => is => 'ro',   isa => NonEmptySimpleStr,
    documentation    => 'File format used to store session data',
    traits           => [ 'Getopt' ], cmd_aliases => q(F), cmd_flag => 'format',
-   default          => 'JSON';
+   default          => sub { $_[ 0 ]->config->storage_class };
 
 has 'tab_title'     => is => 'ro',   isa => NonEmptySimpleStr,
    documentation    => 'Default title to apply to tabs',
-   default          => 'Oo.!.oO';
+   default          => sub { $_[ 0 ]->config->tab_title };
 
 # Private attributes
 has '_extensions'   => is => 'lazy', isa => HashRef, reader => 'extensions';
@@ -95,28 +98,12 @@ sub list : method {
 }
 
 sub load : method {
-   my $self = shift; my $session_tabs = $self->_load_session_tabs;
+   my $self = shift; $self->options->{detached} and return $self->_load;
+   my $cmd  = 'nohup '.$self->config->pathname.' -o detached=1 load ';
+      $cmd .= $self->extra_argv->[ 0 ];
+   my $path = $self->config->logsdir->catfile( 'load_session.out' );
 
-   $self->debug and $self->dumper( $session_tabs );
-   $self->_clear_sessions; sleep $self->config->no_thrash;
-
-   $self->_yakuake_sessions( q(addSession) ) for (1 .. $#{ $session_tabs });
-
-   sleep $self->config->no_thrash; my $active = FALSE; my $term_id = 0;
-
-   for my $tab (@{ $session_tabs }) {
-      my $sess_id = int $self->_yakuake_tabs( q(sessionAtTab), $term_id++ );
-
-      $self->_yakuake_sessions( q(raiseSession), $sess_id );
-      $self->_yakuake_tabs( q(setTabTitle), $sess_id, $tab->{title} );
-      $tab->{cwd}
-         and $self->_yakuake_sessions( q(runCommand), q(cd ).$tab->{cwd} );
-      $tab->{cmd}
-         and $self->_yakuake_sessions( q(runCommand), $tab->{cmd} );
-      $tab->{active} and $active = $sess_id;
-   }
-
-   $active and $self->_yakuake_sessions( q(raiseSession), $active );
+   $self->run_cmd( $cmd, { async => TRUE, out => $path, err => q(out), } );
    return OK;
 }
 
@@ -133,7 +120,7 @@ sub set_tab_title_for_project : method {
 }
 
 sub show : method {
-   $_[ 0 ]->dumper( $_[ 0 ]->_load ); return OK;
+   $_[ 0 ]->dumper( $_[ 0 ]->_load_session_tabs ); return OK;
 }
 
 # Private methods
@@ -152,7 +139,7 @@ sub _build__extensions {
 sub _build_config_dir {
    my $self = shift;
    my $home = $self->config->my_home;
-   my $dir  = $self->io( [ $home, '.'.(class2appdir blessed $self) ] );
+   my $dir  = $self->io( [ $home, '.'.(app_prefix blessed $self) ] );
 
    $dir->exists or $dir->mkpath; return $dir;
 }
@@ -241,6 +228,32 @@ sub _get_session_map {
    return { zip @sessions, @ksessions };
 }
 
+sub _load {
+   my $self = shift; my $session_tabs = $self->_load_session_tabs;
+
+   $self->debug and $self->dumper( $session_tabs );
+   $self->_clear_sessions; sleep $self->config->no_thrash;
+
+   $self->_yakuake_sessions( q(addSession) ) for (1 .. $#{ $session_tabs });
+
+   sleep $self->config->no_thrash; my $active = FALSE; my $term_id = 0;
+
+   for my $tab (@{ $session_tabs }) {
+      my $sess_id = int $self->_yakuake_tabs( q(sessionAtTab), $term_id++ );
+
+      $self->_yakuake_sessions( q(raiseSession), $sess_id );
+      $self->_yakuake_tabs( q(setTabTitle), $sess_id, $tab->{title} );
+      $tab->{cwd}
+         and $self->_yakuake_sessions( q(runCommand), q(cd ).$tab->{cwd} );
+      $tab->{cmd}
+         and $self->_yakuake_sessions( q(runCommand), $tab->{cmd} );
+      $tab->{active} and $active = $sess_id;
+   }
+
+   $active and $self->_yakuake_sessions( q(raiseSession), $active );
+   return OK;
+}
+
 sub _load_session_tabs {
    my $self = shift; my $path = $self->_get_profile_path;
 
@@ -302,7 +315,7 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 =head1 Version
 
-This documents version v0.4.$Rev: 2 $ of L<Yakuake::Sessions>
+This documents version v0.4.$Rev: 3 $ of L<Yakuake::Sessions>
 
 =head1 Synopsis
 
@@ -312,21 +325,20 @@ This documents version v0.4.$Rev: 2 $ of L<Yakuake::Sessions>
    # Create some Yakuake sessions. Set each session to a different directory.
    # Run some commands in some of the sessions like an HTTP web development
    # server or tail -f on a log file. Set the tab titles for each session.
-   # Now create a profile called development
-   ys create development
+   # Now create a profile called dev
+   ys create dev
 
-   # To reduce typing create an alias
-   alias ysld='cd ; nohup yakuake_session load development \
-      1>~/.yakuake-sessions/nohup.out 2>&1'
+   # Subsequently reload the dev profile
+   ys load dev
 
-   # Subsequently reload the development profile
-   ysld
+   # Show the contents of the dev profile
+   ys show dev
 
-   # Show the contents of the development profile
-   ys show development
+   # Edit the contents of the dev profile
+   ys edit dev
 
-   # Edit the contents of the development profile
-   ys edit development
+   # Delete the dev profile
+   ys delete dev
 
    # Command line help
    ys -? | -H | -h [sub-command] | list_methods | dump_self
@@ -337,6 +349,14 @@ Create, edit, load session profiles for the Yakuake Terminal Emulator. Sets
 and manages the tab title text
 
 =head1 Configuration and Environment
+
+Reads configuration from F<~/.yakuakue_sessions/yakuake_session.json> which
+might look like;
+
+   {
+      "doc_title": "Perl",
+      "tab_title": "Oo.!.oO"
+   }
 
 Defines the following list of attributes;
 
@@ -356,11 +376,13 @@ Directory to store the session profiles in
 
 =item C<storage_class>
 
-File format used to store session data. Defaults to C<JSON>
+File format used to store session data. Defaults to the config class
+value; C<JSON>
 
 =item C<tab_title>
 
-Default title to apply to tabs
+Default title to apply to tabs. Defaults to the config class value;
+C<Shell>
 
 =back
 
@@ -407,15 +429,18 @@ current working directories and executing commands
 
 =head2 set_tab_title
 
-   yakuake_session set_tab_title
+   yakuake_session set_tab_title <title_text>
 
-Sets the current tabs title text to the specified value
+Sets the current tabs title text to the specified value. Defaults to the
+vale supplied in the configuration
 
 =head2 set_tab_title_for_project
 
-   yakuake_session set_tab_title_for_project
+   yakuake_session set_tab_title_for_project <title_text>
 
-Set the current tabs title text to the default value for the current project
+Set the current tabs title text to the specified value. Must supply a
+title text. Will save the project name for use by
+C<yakuake_session_tt_cd>
 
 =head2 show
 
@@ -434,6 +459,8 @@ None
 =item L<Class::Usul>
 
 =item L<File::DataClass>
+
+=item L<Yakuake::Sessions::Config>
 
 =back
 
