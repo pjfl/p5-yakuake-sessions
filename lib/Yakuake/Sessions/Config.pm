@@ -1,19 +1,21 @@
-# @(#)Ident: Config.pm 2013-05-04 22:07 pjf ;
+# @(#)Ident: Config.pm 2013-05-06 19:42 pjf ;
 
 package Yakuake::Sessions::Config;
 
-use version; our $VERSION = qv( sprintf '0.1.%d', q$Rev: 3 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.5.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Class::Usul::Moose;
-use Class::Usul::Constants;
-use Class::Usul::Functions qw(throw);
+use Class::Usul::Functions qw(untaint_identifier);
 
-extends qw(Class::Usul::Config::Programs);
+extends q(Class::Usul::Config::Programs);
 
-has 'storage_class' => is => 'ro', isa => NonEmptySimpleStr,
+has 'editor'        => is => 'lazy', isa => NonEmptySimpleStr,
+   default          => sub { untaint_identifier $ENV{EDITOR} || 'emacs' };
+
+has 'storage_class' => is => 'lazy', isa => NonEmptySimpleStr,
    default          => 'JSON';
 
-has 'tab_title'     => is => 'ro', isa => NonEmptySimpleStr,
+has 'tab_title'     => is => 'lazy', isa => NonEmptySimpleStr,
    default          => 'Shell';
 
 __PACKAGE__->meta->make_immutable;
@@ -28,18 +30,24 @@ __END__
 
 =head1 Name
 
-Yakuake::Sessions::Config - One-line description of the modules purpose
+Yakuake::Sessions::Config - Attribute initialization from configuration file
 
 =head1 Synopsis
 
-   use Yakuake::Sessions::Config;
-   # Brief but working code examples
+   use Class::Usul::Moose;
+
+   extends q(Class::Usul::Programs);
+
+   has '+config_class' => default => sub { 'Yakuake::Sessions::Config' };
 
 =head1 Version
 
-This documents version v0.1.$Rev: 3 $ of L<Yakuake::Sessions::Config>
+This documents version v0.5.$Rev: 1 $ of L<Yakuake::Sessions::Config>
 
 =head1 Description
+
+Attribute initialization from configuration file. Any attributes defined
+in the class can be set from the configuration file
 
 =head1 Configuration and Environment
 
@@ -47,11 +55,28 @@ Defines the following attributes;
 
 =over 3
 
+=item C<editor>
+
+Defaults to the environment variable C<EDITOR> or if unset
+C<emacs>
+
+=item C<storage_class>
+
+Defaults to C<JSON>. Format of the configuration file
+
+=item C<tab_title>
+
+Defaults to C<Shell>. String used for the default tab title text
+
 =back
 
 =head1 Subroutines/Methods
 
+None
+
 =head1 Diagnostics
+
+None
 
 =head1 Dependencies
 

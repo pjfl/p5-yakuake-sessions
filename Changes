@@ -1,7 +1,10 @@
 Revision history for Yakuake::Sessions
 
+0.5.1     2013-05-08 02:01:47
+          - Split into base class plus traits
+
 0.4.3     2013-05-04 23:46:16
-          - Split our Config class
+          - Split out Config class
           - Updated POD
           - Moved edit_project command to Module::Provision
           - Improved performan of yakuake_session_tt_cd

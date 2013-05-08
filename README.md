@@ -4,7 +4,7 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 # Version
 
-This documents version v0.4.$Rev: 3 $ of [Yakuake::Sessions](https://metacpan.org/module/Yakuake::Sessions)
+This documents version v0.5.$Rev: 1 $ of [Yakuake::Sessions](https://metacpan.org/module/Yakuake::Sessions)
 
 # Synopsis
 
@@ -52,6 +52,17 @@ Defines the following list of attributes;
 - `dbus`
 
     Qt communication interface and service name
+
+- `config_dir`
+
+    Directory containing the configuration files. Defaults to
+    `~/.yakuake\_sessions`
+
+- `editor`
+
+    The editor used to edit profiles. Can be set from the configuration
+    file. Defaults to the environment variable `EDITOR` or if unset
+    `emacs`
 
 - `force`
 
@@ -135,7 +146,8 @@ Display the contents of the specified session profile
 
 # Diagnostics
 
-None
+Turning on debug, add `-D` to the command line, causes the session dump
+and load subroutines to display the session tabs data
 
 # Dependencies
 
