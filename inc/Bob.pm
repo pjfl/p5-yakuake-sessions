@@ -1,4 +1,4 @@
-# @(#)Ident: Bob.pm 2013-05-03 14:45 pjf ;
+# @(#)Ident: Bob.pm 2013-05-05 22:54 pjf ;
 
 package Bob;
 
@@ -10,7 +10,7 @@ sub whimper { print {*STDOUT} $_[ 0 ]."\n"; exit 0 }
 
 BEGIN { my $reason; $reason = CPANTesting::should_abort and whimper $reason; }
 
-use version; our $VERSION = qv( '1.13' );
+use version; our $VERSION = qv( '1.14' );
 
 use File::Spec::Functions qw(catfile);
 use Module::Build;
@@ -73,9 +73,11 @@ sub __get_cleanup_list {
 }
 
 sub __get_git_repository {
-   return (split q( ), (map  { s{ : }{/}mx; s{ @ }{://}mx; $_ }
-                        grep { m{ \A origin }mx }
-                           qx{ git remote -v 2>/dev/null })[ 0 ] || q())[ 1 ];
+   return (map  { s{ : }{/}mx; s{ @ }{://}mx; $_ }
+           grep { m{ \A git }mx }
+           map  { s{ \s+ }{ }gmx; (split ' ', $_)[ 1 ] }
+           grep { m{ \A origin }mx }
+           qx{ git remote -v 2>/dev/null })[ 0 ];
 }
 
 sub __get_no_index {
