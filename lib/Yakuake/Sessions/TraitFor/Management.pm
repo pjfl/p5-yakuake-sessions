@@ -1,13 +1,13 @@
-# @(#)Ident: Management.pm 2013-05-08 00:55 pjf ;
+# @(#)Ident: Management.pm 2013-05-15 17:38 pjf ;
 
 package Yakuake::Sessions::TraitFor::Management;
 
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.5.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.5.%d', q$Rev: 3 $ =~ /\d+/gmx );
 
 use Moose::Role;
 use Class::Usul::Constants;
-use Class::Usul::Functions        qw(say throw);
+use Class::Usul::Functions        qw(emit throw);
 use MooseX::Types::Common::String qw(NonEmptySimpleStr);
 
 requires qw(dump load profile_dir profile_path);
@@ -44,7 +44,7 @@ sub list : method {
    my $self     = shift;
    my @suffixes = keys %{ $self->file->dataclass_schema->extensions };
 
-   say map { $_->basename( @suffixes ) } $self->profile_dir->all_files;
+   emit map { $_->basename( @suffixes ) } $self->profile_dir->all_files;
    return OK;
 }
 
@@ -73,7 +73,7 @@ Yakuake::Sessions::TraitFor::Management - CRUD methods for session profiles
 
 =head1 Version
 
-This documents version v0.5.$Rev: 1 $ of L<Yakuake::Sessions::TraitFor::Management>
+This documents version v0.5.$Rev: 3 $ of L<Yakuake::Sessions::TraitFor::Management>
 
 =head1 Description
 
