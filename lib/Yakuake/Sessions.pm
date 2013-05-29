@@ -1,9 +1,9 @@
-# @(#)Ident: Sessions.pm 2013-05-15 20:33 pjf ;
+# @(#)Ident: Sessions.pm 2013-05-29 13:13 pjf ;
 
 package Yakuake::Sessions;
 
 use 5.01;
-use version; our $VERSION = qv( sprintf '0.5.%d', q$Rev: 4 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.5.%d', q$Rev: 5 $ =~ /\d+/gmx );
 
 use Class::Usul::Moose;
 use Class::Usul::Constants;
@@ -34,7 +34,7 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 =head1 Version
 
-This documents version v0.5.$Rev: 4 $ of L<Yakuake::Sessions>
+This documents version v0.5.$Rev: 5 $ of L<Yakuake::Sessions>
 
 =head1 Synopsis
 
