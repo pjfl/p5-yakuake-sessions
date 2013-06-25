@@ -1,21 +1,22 @@
 #!/usr/bin/env perl
-# @(#)$Ident: gitcommit-msg 2013-04-22 01:21 pjf ;
+# @(#)$Ident: gitcommit-msg 2013-06-08 17:20 pjf ;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( '0.1' );
+use version; our $VERSION = qv( '0.2' );
 
 use English qw(-no_match_vars);
-use Text::Format;
 
-my $msgf = $ARGV[ 0 ]; my $file = 'Changes';
+my $message_file = $ARGV[ 0 ]; my $change_file = 'Changes';
 
-if (-f $file) {
-   open my $in, '<', $msgf or die "Path ${msgf} cannot open: ${OS_ERROR}";
+if (-f $change_file) {
+   open my $in, '<', $message_file
+      or die "Path ${message_file} cannot open: ${OS_ERROR}";
 
-   my $body    = do { local $RS = undef; <$in> }; close $in;
+   my $message = do { local $RS = undef; <$in> }; close $in;
 
-   open $in, '<', $file or die "File ${file} cannot open: ${OS_ERROR}";
+   open $in, '<', $change_file
+      or die "File ${change_file} cannot open: ${OS_ERROR}";
 
    my $changes = do { local $RS = undef; <$in> }; close $in;
    my ($ver)   = $changes =~ m{ ^ (v?[0-9._]+) }mx; $ver ||= '0.1.1';
@@ -27,13 +28,11 @@ if (-f $file) {
    $entry =~ s{ \A [\-] \s* }{}mx;
    $entry =  (split m{ [\-] }mx, $entry)[ 0 ];
 
-   my $fmtter  = Text::Format->new( bodyIndent  => 1 + length $ver,
-                                    columns     => 50,
-                                    firstIndent => 0, );
-   my $header  = $fmtter->format( "${ver} ${entry}" );
-   my $message = length $body > 1 ? "${header}\n\n${body}" : $header;
+   $message = length $message > 1 ? "${ver} ${message}" : "${ver} ${entry}";
+   $message = substr $message, 0, 50;
 
-   open my $out, '>', $msgf or die "Path ${msgf} cannot open: ${OS_ERROR}";
+   open my $out, '>', $message_file
+      or die "Path ${message_file} cannot open: ${OS_ERROR}";
    print {$out} $message; close $out;
 }
 

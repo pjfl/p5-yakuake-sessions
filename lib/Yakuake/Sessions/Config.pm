@@ -1,11 +1,13 @@
-# @(#)Ident: Config.pm 2013-05-06 19:42 pjf ;
+# @(#)Ident: Config.pm 2013-06-21 13:39 pjf ;
 
 package Yakuake::Sessions::Config;
 
-use version; our $VERSION = qv( sprintf '0.5.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use namespace::sweep;
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
-use Class::Usul::Moose;
-use Class::Usul::Functions qw(untaint_identifier);
+use Class::Usul::Functions  qw( untaint_identifier );
+use File::DataClass::Types  qw( NonEmptySimpleStr );
+use Moo;
 
 extends q(Class::Usul::Config::Programs);
 
@@ -17,8 +19,6 @@ has 'storage_class' => is => 'lazy', isa => NonEmptySimpleStr,
 
 has 'tab_title'     => is => 'lazy', isa => NonEmptySimpleStr,
    default          => 'Shell';
-
-__PACKAGE__->meta->make_immutable;
 
 1;
 
@@ -34,7 +34,7 @@ Yakuake::Sessions::Config - Attribute initialization from configuration file
 
 =head1 Synopsis
 
-   use Class::Usul::Moose;
+   use Moo;
 
    extends q(Class::Usul::Programs);
 
@@ -42,7 +42,7 @@ Yakuake::Sessions::Config - Attribute initialization from configuration file
 
 =head1 Version
 
-This documents version v0.5.$Rev: 1 $ of L<Yakuake::Sessions::Config>
+This documents version v0.6.$Rev: 1 $ of L<Yakuake::Sessions::Config>
 
 =head1 Description
 

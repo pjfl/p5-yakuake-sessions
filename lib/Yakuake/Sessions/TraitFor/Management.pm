@@ -1,19 +1,21 @@
-# @(#)Ident: Management.pm 2013-05-15 17:38 pjf ;
+# @(#)Ident: Management.pm 2013-06-22 22:31 pjf ;
 
 package Yakuake::Sessions::TraitFor::Management;
 
-use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.5.%d', q$Rev: 3 $ =~ /\d+/gmx );
+use namespace::sweep;
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
-use Moose::Role;
 use Class::Usul::Constants;
-use Class::Usul::Functions        qw(emit throw);
-use MooseX::Types::Common::String qw(NonEmptySimpleStr);
+use Class::Usul::Functions  qw( emit throw );
+use File::DataClass::Types  qw( NonEmptySimpleStr );
+use Moo::Role;
+use MooX::Options;
 
-requires qw(dump load profile_dir profile_path);
+requires qw( dump dumper extra_argv file load loc
+             profile_dir profile_path run_cmd );
 
 # Object attributes (public)
-has 'editor'     => is => 'ro', isa => NonEmptySimpleStr, lazy => TRUE,
+option 'editor'  => is => 'lazy', isa => NonEmptySimpleStr,
    documentation => 'Which text editor to use',
    default       => sub { $_[ 0 ]->config->editor };
 
@@ -28,7 +30,7 @@ sub create : method {
 sub delete : method {
    my $self = shift; my $path = $self->profile_path;
 
-   $path->exists or throw error => 'Path [_1] not found', args => [ $path ];
+   $path->exists or throw $self->loc( 'Path [_1] not found', $path );
    $path->unlink;
    return OK;
 }
@@ -66,14 +68,14 @@ Yakuake::Sessions::TraitFor::Management - CRUD methods for session profiles
 
 =head1 Synopsis
 
-   use Moose;
+   use Moo;
 
    extends 'Yakuake::Sessions::Base';
    with    'Yakuake::Sessions::TraitFor::Management';
 
 =head1 Version
 
-This documents version v0.5.$Rev: 3 $ of L<Yakuake::Sessions::TraitFor::Management>
+This documents version v0.6.$Rev: 1 $ of L<Yakuake::Sessions::TraitFor::Management>
 
 =head1 Description
 
@@ -138,9 +140,9 @@ None
 
 =item L<Class::Usul>
 
-=item L<Moose::Role>
+=item L<File::DataClass>
 
-=item L<MooseX::Types::Common>
+=item L<Moo::Role>
 
 =back
 

@@ -1,21 +1,22 @@
-# @(#)Ident: TabTitles.pm 2013-05-08 00:57 pjf ;
+# @(#)Ident: TabTitles.pm 2013-06-22 22:34 pjf ;
 
 package Yakuake::Sessions::TraitFor::TabTitles;
 
-use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.5.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use namespace::sweep;
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
-use Moose::Role;
 use Class::Usul::Constants;
-use Class::Usul::Functions        qw(throw);
-use Cwd                           qw(getcwd);
-use MooseX::Types::Common::String qw(NonEmptySimpleStr);
+use Class::Usul::Functions  qw( throw );
+use Cwd                     qw( getcwd );
+use File::DataClass::Types  qw( NonEmptySimpleStr );
+use Moo::Role;
+use MooX::Options;
 
-requires qw(config_dir yakuake_sessions yakuake_tabs);
+requires qw( config_dir extra_argv io loc yakuake_sessions yakuake_tabs );
 
-has 'tab_title'  => is => 'ro',   isa => NonEmptySimpleStr,
-   documentation => 'Default title to apply to tabs',
-   default       => sub { $_[ 0 ]->config->tab_title };
+option 'tab_title' => is => 'ro', isa => NonEmptySimpleStr,
+   documentation   => 'Default title to apply to tabs',
+   default         => sub { $_[ 0 ]->config->tab_title };
 
 # Public methods
 sub set_tab_title : method {
@@ -25,7 +26,7 @@ sub set_tab_title : method {
 sub set_tab_title_for_project : method {
    my $self = shift; $self->_set_project_for_tty;
 
-   my $title = $self->extra_argv->[ 0 ] or throw 'No tab title';
+   my $title = $self->extra_argv->[ 0 ] or throw $self->loc( 'No tab title' );
 
    $self->_set_tab_title( $title ); return OK;
 }
@@ -42,8 +43,9 @@ sub _set_tab_title {
    my ($self, $title) = @_; $title ||= $self->tab_title;
 
    my $sess_id = $self->yakuake_sessions( q(activeSessionId) );
-   my $term_id = $self->yakuake_sessions( q(activeTerminalId) );
-
+# TODO: Switch to using TTY
+#   my $term_id = $self->yakuake_sessions( q(activeTerminalId) );
+   my $term_id = $ENV{TTY};
    $self->yakuake_tabs( q(setTabTitle), $sess_id, "${term_id} ${title}" );
    return;
 }
@@ -62,14 +64,15 @@ Yakuake::Sessions::TraitFor::TabTitles - Displays the tab title text
 
 =head1 Synopsis
 
-   use Moose;
+   use Moo;
 
    extends 'Yakuake::Sessions::Base';
    with    'Yakuake::Sessions::TraitFor::TabTitles';
 
 =head1 Version
 
-This documents version v0.5.$Rev: 1 $ of L<Yakuake::Sessions::TraitFor::TabTitles>
+This documents version v0.6.$Rev: 1 $ of
+L<Yakuake::Sessions::TraitFor::TabTitles>
 
 =head1 Description
 
@@ -118,9 +121,9 @@ None
 
 =item L<Class::Usul>
 
-=item L<Moose::Role>
+=item L<File::DataClass>
 
-=item L<MooseX::Types::Common>
+=item L<Moo::Role>
 
 =back
 

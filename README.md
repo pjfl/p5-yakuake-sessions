@@ -4,7 +4,7 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 # Version
 
-This documents version v0.5.$Rev: 5 $ of [Yakuake::Sessions](https://metacpan.org/module/Yakuake::Sessions)
+This documents version v0.6.$Rev: 1 $ of [Yakuake::Sessions](https://metacpan.org/module/Yakuake::Sessions)
 
 # Synopsis
 
@@ -81,6 +81,10 @@ Defines the following list of attributes;
 
     Default title to apply to tabs. Defaults to the config class value;
     `Shell`
+
+Modifies these methods in the base class
+
+- `run`
 
 # Subroutines/Methods
 

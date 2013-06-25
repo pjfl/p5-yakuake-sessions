@@ -1,24 +1,24 @@
-# @(#)Ident: Sessions.pm 2013-05-29 13:13 pjf ;
+# @(#)Ident: Sessions.pm 2013-06-21 21:04 pjf ;
 
 package Yakuake::Sessions;
 
 use 5.01;
-use version; our $VERSION = qv( sprintf '0.5.%d', q$Rev: 5 $ =~ /\d+/gmx );
+use namespace::sweep;
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
-use Class::Usul::Moose;
 use Class::Usul::Constants;
+use Moo;
 
 extends q(Yakuake::Sessions::Base);
 with    q(Yakuake::Sessions::TraitFor::FileData);
 with    q(Yakuake::Sessions::TraitFor::Management);
 with    q(Yakuake::Sessions::TraitFor::TabTitles);
+with    q(Class::Usul::TraitFor::UntaintedGetopts);
 
 # Construction
 around 'run' => sub {
    my ($next, $self) = @_; $self->quiet( TRUE ); return $self->$next();
 };
-
-__PACKAGE__->meta->make_immutable;
 
 1;
 
@@ -34,7 +34,7 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 =head1 Version
 
-This documents version v0.5.$Rev: 5 $ of L<Yakuake::Sessions>
+This documents version v0.6.$Rev: 1 $ of L<Yakuake::Sessions>
 
 =head1 Synopsis
 
@@ -113,6 +113,14 @@ value; C<JSON>
 
 Default title to apply to tabs. Defaults to the config class value;
 C<Shell>
+
+=back
+
+Modifies these methods in the base class
+
+=over 3
+
+=item C<run>
 
 =back
 

@@ -1,23 +1,25 @@
-# @(#)Ident: FileData.pm 2013-05-29 13:07 pjf ;
+# @(#)Ident: FileData.pm 2013-06-22 22:28 pjf ;
 
 package Yakuake::Sessions::TraitFor::FileData;
 
-use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.5.%d', q$Rev: 5 $ =~ /\d+/gmx );
+use namespace::sweep;
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
-use Moose::Role;
 use Class::Usul::Constants;
-use Class::Usul::Functions qw(throw trim zip);
-use English                qw(-no_match_vars);
-use MooseX::Types::Moose   qw(Bool HashRef);
+use Class::Usul::Functions  qw( throw trim zip );
+use English                 qw( -no_match_vars );
+use File::DataClass::Types  qw( Bool );
+use Moo::Role;
+use MooX::Options;
 
-requires qw(profile_path query_dbus storage_class
-            yakuake_sessions yakuake_tabs);
+requires qw( add_leader config debug dumper extra_argv file io loc options
+             profile_path query_dbus run_cmd storage_class yakuake_sessions
+             yakuake_tabs yorn );
 
 # Public attributes
-has 'force'      => is => 'ro', isa => Bool, default => FALSE,
+option 'force'   => is => 'ro', isa => Bool, default => FALSE,
    documentation => 'Overwrite the output file if it already exists',
-   traits        => [ 'Getopt' ], cmd_aliases => q(f), cmd_flag => 'force';
+   short         => 'f';
 
 # Public methods
 sub dump : method {
@@ -28,8 +30,9 @@ sub dump : method {
    ($self->debug or not $path) and $self->dumper( $session_tabs );
    $path or return OK; $path = $self->io( $path );
 
-   $path->is_file and $path->exists and not $self->force
-      and not $self->yorn( 'Specified file exists, overwrite?', FALSE, FALSE )
+   my $prompt; $path->exists and $path->is_file and not $self->force
+      and $prompt = $self->loc( 'Specified file exists, overwrite?' )
+      and not $self->yorn( $self->add_leader( $prompt ), FALSE, FALSE )
       and return OK;
 
    $self->file->data_dump( data          => { sessions => $session_tabs },
@@ -42,8 +45,7 @@ sub load : method {
    my ($self, $data_only) = @_; my $path = $self->profile_path;
 
    $path->exists and $path->is_file
-      or throw error => 'Path [_1] does not exist or is not a file',
-               args  => [ $path ];
+      or throw $self->loc( 'Path [_1] does not exist or is not a file', $path );
 
    $data_only and return $self->_load_session_tabs;
 
@@ -51,7 +53,7 @@ sub load : method {
       $self->_apply_sessions( $self->_load_session_tabs ); return OK;
    }
 
-   my $cmd = 'nohup '.$self->config->pathname.' -o detached=1 load '.$path;
+   my $cmd = 'nohup '.$self->config->pathname." -o detached=1 load ${path}";
    my $out = $self->config->logsdir->catfile( 'load_session.out' );
 
    $self->run_cmd( $cmd, { async => TRUE, out => $out, err => q(out), } );
@@ -157,7 +159,7 @@ sub _load_session_tabs {
    my $session_tabs = $self->file->data_load
       ( paths => [ $path ], storage_class => $self->storage_class )->{sessions};
 
-   $session_tabs->[ 0 ] or throw 'No session tabs info found';
+   $session_tabs->[ 0 ] or throw $self->loc( 'No session tabs info found' );
    return $session_tabs;
 }
 
@@ -175,19 +177,19 @@ Yakuake::Sessions::TraitFor::FileData - Dumps and loads session data
 
 =head1 Synopsis
 
-   use Moose;
+   use Moo;
 
    extends 'Yakuake::Sessions::Base';
    with    'Yakuake::Sessions::TraitFor::FileData';
 
 =head1 Version
 
-This documents version v0.5.$Rev: 5 $ of
+This documents version v0.6.$Rev: 1 $ of
 L<Yakuake::Sessions::TraitFor::FileData>
 
 =head1 Description
 
-This is a L<Moose::Role> which dumps and loads session data
+This is a L<Moo::Role> which dumps and loads session data
 
 =head1 Configuration and Environment
 
@@ -230,9 +232,9 @@ None
 
 =item L<Class::Usul>
 
-=item L<Moose::Role>
+=item L<File::DataClass>
 
-=item L<MooseX::Types::Moose>
+=item L<Moo::Role>
 
 =back
 
