@@ -1,9 +1,9 @@
-# @(#)Ident: FileData.pm 2013-06-22 22:28 pjf ;
+# @(#)Ident: FileData.pm 2013-06-27 15:43 pjf ;
 
 package Yakuake::Sessions::TraitFor::FileData;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 2 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( throw trim zip );
@@ -12,9 +12,9 @@ use File::DataClass::Types  qw( Bool );
 use Moo::Role;
 use MooX::Options;
 
-requires qw( add_leader config debug dumper extra_argv file io loc options
-             profile_path query_dbus run_cmd storage_class yakuake_sessions
-             yakuake_tabs yorn );
+requires qw( add_leader config debug dumper extra_argv file get_tab_title
+             io loc options profile_path query_dbus run_cmd set_tab_title
+             storage_class yakuake_sessions yakuake_tabs yorn );
 
 # Public attributes
 option 'force'   => is => 'ro', isa => Bool, default => FALSE,
@@ -75,7 +75,7 @@ sub _apply_sessions {
       my $sess_id = int $self->yakuake_tabs( q(sessionAtTab), $term_id++ );
 
       $self->yakuake_sessions( q(raiseSession), $sess_id );
-      $self->yakuake_tabs( q(setTabTitle), $sess_id, $tab->{title} );
+      $self->_set_tab_title_for_session( $sess_id, $tab->{title} );
       $tab->{cwd}
          and $self->yakuake_sessions( q(runCommand), q(cd ).$tab->{cwd} );
       $tab->{cmd}
@@ -117,7 +117,7 @@ sub _dump_session_tabs {
          active    => $sess_id == $active_sess,
          cmd       => $self->_get_executing_command( $pid, $fgpid ),
          cwd       => $self->_get_current_directory( $pid ),
-         title     => $self->yakuake_tabs( q(tabTitle), $sess_id ),
+         title     => $self->get_tab_title( $sess_id ),
       };
    }
 
@@ -163,6 +163,18 @@ sub _load_session_tabs {
    return $session_tabs;
 }
 
+sub _set_tab_title_for_session {
+   my ($self, $sess_id, $tab_title) = @_;
+
+   my $session_map = $self->_get_session_map;
+   my $ksess_id    = $session_map->{ $sess_id }; defined $ksess_id or return;
+   my $pid         = $self->query_dbus( "/Sessions/${ksess_id}", 'processId' );
+   my $cmd         = [ qw( ps --no-headers -o tty -p ), $pid ];
+   my $tty         = $self->run_cmd( $cmd )->out;
+
+   return $self->set_tab_title( $tab_title, (split m{ [/] }mx, $tty)[ -1 ] );
+}
+
 1;
 
 __END__
@@ -184,7 +196,7 @@ Yakuake::Sessions::TraitFor::FileData - Dumps and loads session data
 
 =head1 Version
 
-This documents version v0.6.$Rev: 1 $ of
+This documents version v0.6.$Rev: 2 $ of
 L<Yakuake::Sessions::TraitFor::FileData>
 
 =head1 Description

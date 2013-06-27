@@ -1,9 +1,9 @@
-# @(#)Ident: TabTitles.pm 2013-06-22 22:34 pjf ;
+# @(#)Ident: TabTitles.pm 2013-06-27 15:40 pjf ;
 
 package Yakuake::Sessions::TraitFor::TabTitles;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 2 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( throw );
@@ -19,16 +19,30 @@ option 'tab_title' => is => 'ro', isa => NonEmptySimpleStr,
    default         => sub { $_[ 0 ]->config->tab_title };
 
 # Public methods
+sub get_tab_title {
+   my ($self, $sess_id) = @_;
+
+   my $title = $self->yakuake_tabs( q(tabTitle), $sess_id );
+
+   $title =~ s{ \A \d+ \s+ }{}mx;
+   return $title;
+}
+
 sub set_tab_title : method {
-   $_[ 0 ]->_set_tab_title( $_[ 0 ]->extra_argv->[ 0 ] ); return OK;
+   my ($self, $title, $tty) = @_;
+
+   $title ||= shift @{ $self->extra_argv } || $self->tab_title;
+   $self->_set_tab_title( $title, $tty );
+   return OK;
 }
 
 sub set_tab_title_for_project : method {
-   my $self = shift; $self->_set_project_for_tty;
+   my $self = shift; my $title = shift @{ $self->extra_argv };
 
-   my $title = $self->extra_argv->[ 0 ] or throw $self->loc( 'No tab title' );
+   $title or throw $self->loc( 'No tab title' ); $self->_set_project_for_tty;
 
-   $self->_set_tab_title( $title ); return OK;
+   $self->_set_tab_title( $title );
+   return OK;
 }
 
 # Private methods
@@ -40,13 +54,11 @@ sub _set_project_for_tty {
 }
 
 sub _set_tab_title {
-   my ($self, $title) = @_; $title ||= $self->tab_title;
+   my ($self, $title, $tty) = @_; $tty //= $ENV{TTY};
 
    my $sess_id = $self->yakuake_sessions( q(activeSessionId) );
-# TODO: Switch to using TTY
-#   my $term_id = $self->yakuake_sessions( q(activeTerminalId) );
-   my $term_id = $ENV{TTY};
-   $self->yakuake_tabs( q(setTabTitle), $sess_id, "${term_id} ${title}" );
+
+   $self->yakuake_tabs( q(setTabTitle), $sess_id, "${tty} ${title}" );
    return;
 }
 
@@ -71,7 +83,7 @@ Yakuake::Sessions::TraitFor::TabTitles - Displays the tab title text
 
 =head1 Version
 
-This documents version v0.6.$Rev: 1 $ of
+This documents version v0.6.$Rev: 2 $ of
 L<Yakuake::Sessions::TraitFor::TabTitles>
 
 =head1 Description

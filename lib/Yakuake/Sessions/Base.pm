@@ -1,9 +1,9 @@
-# @(#)Ident: Base.pm 2013-06-22 21:36 pjf ;
+# @(#)Ident: Base.pm 2013-06-27 14:46 pjf ;
 
 package Yakuake::Sessions::Base;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 2 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( app_prefix throw trim );
@@ -20,7 +20,7 @@ has '+config_class' => default => sub { 'Yakuake::Sessions::Config' };
 # Public attributes
 option 'dbus'          => is => 'ro',   isa => ArrayRef[NonEmptySimpleStr],
    documentation       => 'Qt communication interface and service name',
-   default             => sub { [ qw(qdbus org.kde.yakuake) ] };
+   default             => sub { [ qw( qdbus org.kde.yakuake ) ] };
 
 option 'config_dir'    => is => 'lazy', isa => Directory,
    documentation       => 'Directory to store configuration files',
@@ -44,7 +44,8 @@ has 'profile_path' => is => 'lazy', isa => Path, coerce => Path->coercion,
 sub query_dbus {
    my $self = shift; my $cmd = [ @{ $self->dbus }, @_ ];
 
-   return trim $self->run_cmd( $cmd, { debug => $self->debug } )->stdout;
+   return trim $self->run_cmd( $cmd, {
+      debug => $self->debug, err => 'out' } )->stdout;
 }
 
 sub yakuake_sessions {
@@ -115,7 +116,7 @@ Yakuake::Sessions::Base - Attributes and methods for Yakuake session management
 
 =head1 Version
 
-This documents version v0.6.$Rev: 1 $ of L<Yakuake::Sessions::Base>
+This documents version v0.6.$Rev: 2 $ of L<Yakuake::Sessions::Base>
 
 =head1 Description
 
