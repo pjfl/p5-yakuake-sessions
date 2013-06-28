@@ -1,9 +1,9 @@
-# @(#)Ident: TabTitles.pm 2013-06-27 15:40 pjf ;
+# @(#)Ident: TabTitles.pm 2013-06-28 11:34 pjf ;
 
 package Yakuake::Sessions::TraitFor::TabTitles;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 2 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 3 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( throw );
@@ -14,52 +14,38 @@ use MooX::Options;
 
 requires qw( config_dir extra_argv io loc yakuake_sessions yakuake_tabs );
 
-option 'tab_title' => is => 'ro', isa => NonEmptySimpleStr,
-   documentation   => 'Default title to apply to tabs',
-   default         => sub { $_[ 0 ]->config->tab_title };
-
 # Public methods
 sub get_tab_title {
    my ($self, $sess_id) = @_;
 
-   my $title = $self->yakuake_tabs( q(tabTitle), $sess_id );
+   $sess_id ||= $self->yakuake_sessions( q(activeSessionId) );
 
-   $title =~ s{ \A \d+ \s+ }{}mx;
+  (my $title = $self->yakuake_tabs( q(tabTitle), $sess_id ))
+      =~ s{ \A \d+ \s+ }{}mx;
+
    return $title;
 }
 
 sub set_tab_title : method {
-   my ($self, $title, $tty) = @_;
+   my ($self, $sess_id, $title, $tty_num) = @_;
 
-   $title ||= shift @{ $self->extra_argv } || $self->tab_title;
-   $self->_set_tab_title( $title, $tty );
+   $sess_id ||= $self->yakuake_sessions( 'activeSessionId' );
+   $title   ||= shift @{ $self->extra_argv } || $self->config->tab_title;
+   $tty_num ||= $ENV{TTY};
+
+   $self->yakuake_tabs( 'setTabTitle', $sess_id, "${tty_num} ${title}" );
    return OK;
 }
 
 sub set_tab_title_for_project : method {
    my $self = shift; my $title = shift @{ $self->extra_argv };
 
-   $title or throw $self->loc( 'No tab title' ); $self->_set_project_for_tty;
+   $title or throw $self->loc( 'No tab title' );
 
-   $self->_set_tab_title( $title );
+   $self->config_dir->catfile( 'project_'.$ENV{TTY} )->print( $self->appbase );
+
+   $self->set_tab_title( undef, $title );
    return OK;
-}
-
-# Private methods
-sub _set_project_for_tty {
-   my $self = shift;
-
-   $self->io( [ $self->config_dir, q(project_).$ENV{TTY} ] )->print( getcwd );
-   return;
-}
-
-sub _set_tab_title {
-   my ($self, $title, $tty) = @_; $tty //= $ENV{TTY};
-
-   my $sess_id = $self->yakuake_sessions( q(activeSessionId) );
-
-   $self->yakuake_tabs( q(setTabTitle), $sess_id, "${tty} ${title}" );
-   return;
 }
 
 1;
@@ -83,7 +69,7 @@ Yakuake::Sessions::TraitFor::TabTitles - Displays the tab title text
 
 =head1 Version
 
-This documents version v0.6.$Rev: 2 $ of
+This documents version v0.6.$Rev: 3 $ of
 L<Yakuake::Sessions::TraitFor::TabTitles>
 
 =head1 Description
