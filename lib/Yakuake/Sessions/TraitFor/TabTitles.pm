@@ -1,9 +1,9 @@
-# @(#)Ident: TabTitles.pm 2013-06-28 11:34 pjf ;
+# @(#)Ident: TabTitles.pm 2013-06-28 13:02 pjf ;
 
 package Yakuake::Sessions::TraitFor::TabTitles;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 3 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 4 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( throw );
@@ -12,7 +12,7 @@ use File::DataClass::Types  qw( NonEmptySimpleStr );
 use Moo::Role;
 use MooX::Options;
 
-requires qw( config_dir extra_argv io loc yakuake_sessions yakuake_tabs );
+requires qw( config_dir extra_argv loc yakuake_sessions yakuake_tabs );
 
 # Public methods
 sub get_tab_title {
@@ -41,10 +41,11 @@ sub set_tab_title_for_project : method {
    my $self = shift; my $title = shift @{ $self->extra_argv };
 
    $title or throw $self->loc( 'No tab title' );
-
-   $self->config_dir->catfile( 'project_'.$ENV{TTY} )->print( $self->appbase );
-
    $self->set_tab_title( undef, $title );
+
+   my $appbase = shift @{ $self->extra_argv } || getcwd;
+
+   $self->config_dir->catfile( 'project_'.$ENV{TTY} )->println( $appbase );
    return OK;
 }
 
@@ -69,7 +70,7 @@ Yakuake::Sessions::TraitFor::TabTitles - Displays the tab title text
 
 =head1 Version
 
-This documents version v0.6.$Rev: 3 $ of
+This documents version v0.6.$Rev: 4 $ of
 L<Yakuake::Sessions::TraitFor::TabTitles>
 
 =head1 Description
