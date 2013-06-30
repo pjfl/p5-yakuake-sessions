@@ -1,9 +1,9 @@
 #!/usr/bin/env perl
-# @(#)Ident: yakuake_session 2013-05-07 23:57 pjf ;
+# @(#)Ident: yakuake_session 2013-06-30 02:33 pjf ;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 5 $ =~ /\d+/gmx );
 
 use Yakuake::Sessions;
 
@@ -27,9 +27,9 @@ yakuake_session - Session Manager for the Yakuake Terminal Emulator
 
 Execute named method
 
-=item B<yakuake_session> B<-H> | B<-h> I<[method]>| B<-?>
+=item B<yakuake_session> B<-H> | B<-h> I<method> | B<-h> | B<-?>
 
-Display man page / help method  / usage string
+Display man page / method help / option descriptions / usage strings
 
 =item B<yakuake_session> list_methods
 
@@ -39,7 +39,7 @@ Lists the methods available in this program
 
 =head1 VERSION
 
-This documents version v0.6.$Rev: 1 $ of C<yakuake_session>
+This documents version v0.6.$Rev: 5 $ of C<yakuake_session>
 
 =head1 DESCRIPTION
 
@@ -59,9 +59,49 @@ The name of the profile being managed
 
 =over 3
 
-=item B<-D>
+=item B<-c> I<method>
 
-Turn debugging on
+Name of method to call. Required, can be first non option argument
+
+=item B<-D        >
+
+Turn debugging on. Promps if interactive
+
+=item B<--encoding>
+
+Decodes/encodes input/output using the value. Defaults to I<UTF-8>
+
+=item B<-h        >
+
+Uses Pod::Usage to describe the program usage options
+
+=item B<-H        >
+
+Uses Pod::Man to display the program documentation. Pipes through C<nroff>
+
+=item B<--home    >
+
+Directory containing the configuration file
+
+=item B<-L        >
+
+Loads the specified language message catalog
+
+=item B<-n        >
+
+Do not prompt for debugging
+
+=item B<-o        >
+
+Zero, one or more key/value pairs passed to the method call
+
+=item B<-q        >
+
+Quiet the display of information messages
+
+=item B<-V        >
+
+Displays the version number of the program class
 
 =back
 

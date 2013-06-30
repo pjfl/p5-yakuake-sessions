@@ -1,6 +1,7 @@
 Revision history for Yakuake::Sessions
 
 0.6.2     2013-06-27 16:50:33
+          - Added POD method abstracts
           - Fixed bug in set tab title for project
           - Now use TTYs to number tab titles
           - Mooified

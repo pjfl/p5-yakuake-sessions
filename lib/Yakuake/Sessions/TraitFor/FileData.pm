@@ -1,9 +1,9 @@
-# @(#)Ident: FileData.pm 2013-06-28 11:42 pjf ;
+# @(#)Ident: FileData.pm 2013-06-30 02:24 pjf ;
 
 package Yakuake::Sessions::TraitFor::FileData;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 3 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 5 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( throw trim zip );
@@ -196,7 +196,7 @@ Yakuake::Sessions::TraitFor::FileData - Dumps and loads session data
 
 =head1 Version
 
-This documents version v0.6.$Rev: 3 $ of
+This documents version v0.6.$Rev: 5 $ of
 L<Yakuake::Sessions::TraitFor::FileData>
 
 =head1 Description
@@ -217,22 +217,20 @@ Overwrite the output file if it already exists
 
 =head1 Subroutines/Methods
 
-=head2 dump
+=head2 dump - Dumps the current sessions to file
 
    $exit_code = $self->dump;
 
-Dumps the current sessions to file. For each tab it captures the
-current working directory, the command being executed, the tab title text,
-and which tab is currently active
+For each tab it captures the current working directory, the command
+being executed, the tab title text, and which tab is currently active
 
-=head2 load
+=head2 load - Load the specified profile
 
    $exit_code = $self->load( $data_only_flag );
 
-Load the specified profile, recreating the tabs with their title text,
-current working directories and executing commands. If the
-C<$data_only_flag> is true returns the session data information but
-does not apply it
+Tabs are recreating with their title text, current working directories
+and executing commands. If the C<$data_only_flag> is true returns the
+session data information but does not apply it
 
 =head1 Diagnostics
 

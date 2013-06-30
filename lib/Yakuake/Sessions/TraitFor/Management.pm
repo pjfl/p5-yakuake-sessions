@@ -1,9 +1,9 @@
-# @(#)Ident: Management.pm 2013-06-22 22:31 pjf ;
+# @(#)Ident: Management.pm 2013-06-30 02:09 pjf ;
 
 package Yakuake::Sessions::TraitFor::Management;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 5 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( emit throw );
@@ -75,7 +75,7 @@ Yakuake::Sessions::TraitFor::Management - CRUD methods for session profiles
 
 =head1 Version
 
-This documents version v0.6.$Rev: 1 $ of L<Yakuake::Sessions::TraitFor::Management>
+This documents version v0.6.$Rev: 5 $ of L<Yakuake::Sessions::TraitFor::Management>
 
 =head1 Description
 
@@ -100,35 +100,35 @@ C<emacs>
 
 =head1 Subroutines/Methods
 
-=head2 create
+=head2 create - Create a new session profile
 
    $exit_code = $self->create;
 
-Creates a new session profile in the C<profile_dir>
+New session profiles are created in the C<profile_dir> directory
 
-=head2 delete
+=head2 delete - Delete a session profile
 
    $exit_code = $self->delete;
 
-Deletes the specified session profile
+The session profile is specified on the command line
 
-=head2 edit
+=head2 edit - Edit a session profile
 
    $exit_code = $self->edit;
 
-Edit a session profile
+Uses the C<editor> attribute to select the editor
 
-=head2 list
+=head2 list - List the names of the stored profiles
 
    $exit_code = $self->list;
 
 List the session profiles stored in the C<profile_dir>
 
-=head2 show
+=head2 show - Display the contents of a session profile
 
    $exit_code = $self->show;
 
-Display the contents of the specified session profile
+The session profile is specified on the command line
 
 =head1 Diagnostics
 

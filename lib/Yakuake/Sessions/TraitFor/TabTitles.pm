@@ -1,9 +1,9 @@
-# @(#)Ident: TabTitles.pm 2013-06-28 13:02 pjf ;
+# @(#)Ident: TabTitles.pm 2013-06-30 02:27 pjf ;
 
 package Yakuake::Sessions::TraitFor::TabTitles;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 4 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 5 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( throw );
@@ -70,7 +70,7 @@ Yakuake::Sessions::TraitFor::TabTitles - Displays the tab title text
 
 =head1 Version
 
-This documents version v0.6.$Rev: 4 $ of
+This documents version v0.6.$Rev: 5 $ of
 L<Yakuake::Sessions::TraitFor::TabTitles>
 
 =head1 Description
@@ -95,14 +95,14 @@ C<Shell>
 
 =head1 Subroutines/Methods
 
-=head2 set_tab_title
+=head2 set_tab_title - Sets the current tabs title text
 
    $exit_code = $self->set_tab_title;
 
-Sets the current tabs title text to the specified value. Defaults to the
-vale supplied in the configuration
+The value is obtained from the command line. Defaults to the vale
+supplied in the configuration
 
-=head2 set_tab_title_for_project
+=head2 set_tab_title_for_project - Sets the tab title text for the project
 
    $exit_code = $self->set_tab_title_for_project;
 
