@@ -1,9 +1,9 @@
-# @(#)Ident: FileData.pm 2013-06-30 02:24 pjf ;
+# @(#)Ident: FileData.pm 2013-06-30 18:33 pjf ;
 
 package Yakuake::Sessions::TraitFor::FileData;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 5 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 8 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( throw trim zip );
@@ -12,8 +12,8 @@ use File::DataClass::Types  qw( Bool );
 use Moo::Role;
 use MooX::Options;
 
-requires qw( add_leader config debug dumper extra_argv file get_tab_title
-             io loc options profile_path query_dbus run_cmd set_tab_title
+requires qw( add_leader config debug dumper file get_tab_title io loc options
+             next_argv profile_path query_dbus run_cmd set_tab_title
              storage_class yakuake_sessions yakuake_tabs yorn );
 
 # Public attributes
@@ -23,7 +23,7 @@ option 'force'   => is => 'ro', isa => Bool, default => FALSE,
 
 # Public methods
 sub dump : method {
-   my $self = shift; my $path = shift @{ $self->extra_argv };
+   my $self = shift; my $path = $self->next_argv;
 
    my $session_tabs = $self->_get_session_tabs_from_yakuake;
 
@@ -196,7 +196,7 @@ Yakuake::Sessions::TraitFor::FileData - Dumps and loads session data
 
 =head1 Version
 
-This documents version v0.6.$Rev: 5 $ of
+This documents version v0.6.$Rev: 8 $ of
 L<Yakuake::Sessions::TraitFor::FileData>
 
 =head1 Description

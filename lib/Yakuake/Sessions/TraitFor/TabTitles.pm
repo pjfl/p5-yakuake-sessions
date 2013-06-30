@@ -1,9 +1,9 @@
-# @(#)Ident: TabTitles.pm 2013-06-30 16:02 pjf ;
+# @(#)Ident: TabTitles.pm 2013-06-30 18:37 pjf ;
 
 package Yakuake::Sessions::TraitFor::TabTitles;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 6 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 8 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( throw );
@@ -12,7 +12,7 @@ use File::DataClass::Types  qw( NonEmptySimpleStr );
 use Moo::Role;
 use MooX::Options;
 
-requires qw( config_dir extra_argv loc yakuake_sessions yakuake_tabs );
+requires qw( config_dir loc next_argv yakuake_sessions yakuake_tabs );
 
 # Public methods
 sub get_tab_title {
@@ -30,7 +30,7 @@ sub set_tab_title : method {
    my ($self, $sess_id, $title, $tty_num) = @_;
 
    $sess_id ||= $self->yakuake_sessions( 'activeSessionId' );
-   $title   ||= shift @{ $self->extra_argv } || $self->config->tab_title;
+   $title   ||= $self->next_argv || $self->config->tab_title;
    $tty_num ||= $ENV{TTY};
 
    $self->yakuake_tabs( 'setTabTitle', $sess_id, "${tty_num} ${title}" );
@@ -38,13 +38,11 @@ sub set_tab_title : method {
 }
 
 sub set_tab_title_for_project : method {
-   my $self = shift; my $title = shift @{ $self->extra_argv };
+   my $self    = shift;
+   my $title   = $self->next_argv or throw $self->loc( 'No tab title' );
+   my $appbase = $self->next_argv || getcwd;
 
-   $title or throw $self->loc( 'No tab title' );
    $self->set_tab_title( undef, $title );
-
-   my $appbase = shift @{ $self->extra_argv } || getcwd;
-
    $self->config_dir->catfile( 'project_'.$ENV{TTY} )->println( $appbase );
    return OK;
 }
@@ -70,7 +68,7 @@ Yakuake::Sessions::TraitFor::TabTitles - Displays the tab title text
 
 =head1 Version
 
-This documents version v0.6.$Rev: 6 $ of
+This documents version v0.6.$Rev: 8 $ of
 L<Yakuake::Sessions::TraitFor::TabTitles>
 
 =head1 Description

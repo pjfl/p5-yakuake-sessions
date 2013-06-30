@@ -1,9 +1,9 @@
-# @(#)Ident: Base.pm 2013-06-30 16:21 pjf ;
+# @(#)Ident: Base.pm 2013-06-30 18:31 pjf ;
 
 package Yakuake::Sessions::Base;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 7 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 8 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( app_prefix throw trim );
@@ -80,7 +80,7 @@ sub _build_extensions {
 
 sub _build_profile_path {
    my $self    = shift;
-   my $profile = shift @{ $self->extra_argv }
+   my $profile = $self->next_argv
       or throw $self->loc( 'Profile name not specified' );
    my $path    = $self->io( $profile ); $path->exists and return $path;
    my $profdir = $self->profile_dir; $path = $profdir->catfile( $profile );
@@ -117,7 +117,7 @@ Yakuake::Sessions::Base - Attributes and methods for Yakuake session management
 
 =head1 Version
 
-This documents version v0.6.$Rev: 7 $ of L<Yakuake::Sessions::Base>
+This documents version v0.6.$Rev: 8 $ of L<Yakuake::Sessions::Base>
 
 =head1 Description
 
