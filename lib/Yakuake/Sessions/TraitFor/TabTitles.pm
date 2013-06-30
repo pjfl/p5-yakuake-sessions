@@ -1,9 +1,9 @@
-# @(#)Ident: TabTitles.pm 2013-06-30 02:27 pjf ;
+# @(#)Ident: TabTitles.pm 2013-06-30 16:02 pjf ;
 
 package Yakuake::Sessions::TraitFor::TabTitles;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 5 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 6 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( throw );
@@ -70,7 +70,7 @@ Yakuake::Sessions::TraitFor::TabTitles - Displays the tab title text
 
 =head1 Version
 
-This documents version v0.6.$Rev: 5 $ of
+This documents version v0.6.$Rev: 6 $ of
 L<Yakuake::Sessions::TraitFor::TabTitles>
 
 =head1 Description
@@ -94,6 +94,13 @@ C<Shell>
 =back
 
 =head1 Subroutines/Methods
+
+=head2 get_tab_title
+
+   $title_text = $self->get_tab_title( $sess_id );
+
+Returns the tab title text for the session. The session defaults to the
+currently active one
 
 =head2 set_tab_title - Sets the current tabs title text
 
