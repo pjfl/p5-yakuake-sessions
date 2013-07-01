@@ -1,9 +1,9 @@
-# @(#)Ident: Management.pm 2013-06-30 02:09 pjf ;
+# @(#)Ident: Management.pm 2013-06-30 20:39 pjf ;
 
 package Yakuake::Sessions::TraitFor::Management;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 5 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 9 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( emit throw );
@@ -21,9 +21,10 @@ option 'editor'  => is => 'lazy', isa => NonEmptySimpleStr,
 
 # Public methods
 sub create : method {
-   my $self = shift; my $path = $self->profile_path;
+   my $self = shift;
 
-   $path->assert_filepath; push @{ $self->extra_argv }, $path;
+   unshift @{ $self->extra_argv }, $self->profile_path->assert_filepath;
+
    return $self->dump;
 }
 
@@ -75,7 +76,7 @@ Yakuake::Sessions::TraitFor::Management - CRUD methods for session profiles
 
 =head1 Version
 
-This documents version v0.6.$Rev: 5 $ of L<Yakuake::Sessions::TraitFor::Management>
+This documents version v0.6.$Rev: 9 $ of L<Yakuake::Sessions::TraitFor::Management>
 
 =head1 Description
 

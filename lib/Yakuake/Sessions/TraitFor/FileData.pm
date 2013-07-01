@@ -1,9 +1,9 @@
-# @(#)Ident: FileData.pm 2013-06-30 18:33 pjf ;
+# @(#)Ident: FileData.pm 2013-07-01 13:09 pjf ;
 
 package Yakuake::Sessions::TraitFor::FileData;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 8 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 9 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( throw trim zip );
@@ -62,28 +62,27 @@ sub load : method {
 
 # Private methods
 sub _apply_sessions {
-   my ($self, $session_tabs) = @_;
+   my ($self, $session_tabs) = @_; my $active = FALSE; my $first = TRUE;
 
-   $self->debug and $self->dumper( $session_tabs );
-   $self->_clear_sessions; sleep $self->config->no_thrash;
+   $self->_clear_sessions;
 
-   $self->yakuake_sessions( q(addSession) ) for (1 .. $#{ $session_tabs });
-
-   sleep $self->config->no_thrash; my $active = FALSE; my $term_id = 0;
+   my $sess_id = $self->yakuake_tabs( 'sessionAtTab', 0 );
 
    for my $tab (@{ $session_tabs }) {
-      my $sess_id = int $self->yakuake_tabs( q(sessionAtTab), $term_id++ );
+      $first or $self->yakuake_sessions( 'addSession' );
 
-      $self->yakuake_sessions( q(raiseSession), $sess_id );
+      my $sess_id = int $self->yakuake_sessions( 'activeSessionId' );
+
       $self->_set_tab_title_for_session( $sess_id, $tab->{title} );
       $tab->{cwd}
-         and $self->yakuake_sessions( q(runCommand), q(cd ).$tab->{cwd} );
+         and $self->yakuake_sessions( 'runCommand', 'cd '.$tab->{cwd} );
       $tab->{cmd}
-         and $self->yakuake_sessions( q(runCommand), $tab->{cmd} );
+         and $self->yakuake_sessions( 'runCommand', $tab->{cmd} );
       $tab->{active} and $active = $sess_id;
+      $first = FALSE;
    }
 
-   $active and $self->yakuake_sessions( q(raiseSession), $active );
+   $active and $self->yakuake_sessions( 'raiseSession', $active );
    return;
 }
 
@@ -196,7 +195,7 @@ Yakuake::Sessions::TraitFor::FileData - Dumps and loads session data
 
 =head1 Version
 
-This documents version v0.6.$Rev: 8 $ of
+This documents version v0.6.$Rev: 9 $ of
 L<Yakuake::Sessions::TraitFor::FileData>
 
 =head1 Description
