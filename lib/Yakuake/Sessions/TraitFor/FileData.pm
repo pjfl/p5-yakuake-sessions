@@ -1,20 +1,20 @@
-# @(#)Ident: FileData.pm 2013-07-01 13:09 pjf ;
+# @(#)Ident: FileData.pm 2013-07-06 17:40 pjf ;
 
 package Yakuake::Sessions::TraitFor::FileData;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 9 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 10 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
-use Class::Usul::Functions  qw( throw trim zip );
-use English                 qw( -no_match_vars );
+use Class::Usul::Functions  qw( throw );
 use File::DataClass::Types  qw( Bool );
 use Moo::Role;
 use MooX::Options;
 
-requires qw( add_leader config debug dumper file get_tab_title io loc options
-             next_argv profile_path query_dbus run_cmd set_tab_title
-             storage_class yakuake_sessions yakuake_tabs yorn );
+requires qw( add_leader clear_sessions config debug dumper file
+             get_session_tabs_from_yakuake io loc maybe_add_session
+             options next_argv profile_path raise_session run_cmd
+             run_cmd_in_tab set_tab_title_for_session storage_class yorn );
 
 # Public attributes
 option 'force'   => is => 'ro', isa => Bool, default => FALSE,
@@ -25,7 +25,7 @@ option 'force'   => is => 'ro', isa => Bool, default => FALSE,
 sub dump : method {
    my $self = shift; my $path = $self->next_argv;
 
-   my $session_tabs = $self->_get_session_tabs_from_yakuake;
+   my $session_tabs = $self->get_session_tabs_from_yakuake;
 
    ($self->debug or not $path) and $self->dumper( $session_tabs );
    $path or return OK; $path = $self->io( $path );
@@ -62,67 +62,22 @@ sub load : method {
 
 # Private methods
 sub _apply_sessions {
-   my ($self, $session_tabs) = @_; my $active = FALSE; my $first = TRUE;
+   my ($self, $session_tabs) = @_; my $active = FALSE; my $term_id = 0;
 
-   $self->_clear_sessions;
-
-   my $sess_id = $self->yakuake_tabs( 'sessionAtTab', 0 );
+   $self->clear_sessions;
 
    for my $tab (@{ $session_tabs }) {
-      $first or $self->yakuake_sessions( 'addSession' );
+      my $sess_id = $self->maybe_add_session( $term_id );
 
-      my $sess_id = int $self->yakuake_sessions( 'activeSessionId' );
-
-      $self->_set_tab_title_for_session( $sess_id, $tab->{title} );
-      $tab->{cwd}
-         and $self->yakuake_sessions( 'runCommand', 'cd '.$tab->{cwd} );
-      $tab->{cmd}
-         and $self->yakuake_sessions( 'runCommand', $tab->{cmd} );
+      $self->set_tab_title_for_session( $sess_id, $tab->{title} );
+      $tab->{cwd   } and $self->run_cmd_in_tab( 'cd '.$tab->{cwd} );
+      $tab->{cmd   } and $self->run_cmd_in_tab( $tab->{cmd} );
       $tab->{active} and $active = $sess_id;
-      $first = FALSE;
+      $term_id++;
    }
 
-   $active and $self->yakuake_sessions( 'raiseSession', $active );
+   $active and $self->raise_session( $active );
    return;
-}
-
-sub _clear_sessions {
-   my $self = shift;
-
-   for (grep { m{ /Sessions/ }msx } split m{ \n }msx, $self->query_dbus) {
-      $self->query_dbus( $_, q(close) );
-   }
-
-   return;
-}
-
-sub _get_current_directory {
-   my ($self, $pid) = @_; my $cmd = [ qw(pwdx), $pid ];
-
-   my $out = $self->run_cmd( $cmd, { debug => $self->debug } )->stdout;
-
-   return trim( (split m{ : }msx, $out)[ 1 ] );
-}
-
-sub _get_executing_command {
-   my ($self, $pid, $fgpid) = @_; $pid == $fgpid and return NUL;
-
-   my $cmd = [ qw(ps --format command --no-headers --pid), $fgpid ];
-
-   $cmd = trim $self->run_cmd( $cmd, { debug => $self->debug } )->stdout;
-
-   return $cmd =~ m{ \A perl (.+) $PROGRAM_NAME }msx ? NUL : $cmd;
-}
-
-sub _get_session_map {
-   my $self      = shift;
-   my @sessions  = sort   { $a <=> $b } map { int $_ } split m{ , }msx,
-                            $self->yakuake_sessions( q(sessionIdList) );
-   my @ksessions = sort   { $a <=> $b } map { (split m{ / }msx, $_)[ -1 ] }
-                   grep   { m{ /Sessions/ }msx }
-                   split m{ \n }msx, $self->query_dbus;
-
-   return { zip @sessions, @ksessions };
 }
 
 sub _get_session_tabs_from_file {
@@ -133,45 +88,6 @@ sub _get_session_tabs_from_file {
 
    $session_tabs->[ 0 ] or throw $self->loc( 'No session tabs info found' );
    return $session_tabs;
-}
-
-sub _get_session_tabs_from_yakuake {
-   my $self        = shift;
-   my $active_sess = int $self->yakuake_sessions( q(activeSessionId) );
-   my @term_ids    = split m{ , }mx,
-                        $self->yakuake_sessions( q(terminalIdList) );
-   my $session_map = $self->_get_session_map;
-   my $tabs        = [];
-
-   for my $term_id (0 .. $#term_ids) {
-      my $sess_id  = int $self->yakuake_tabs( q(sessionAtTab), $term_id );
-      my $ksess_id = $session_map->{ $sess_id }; defined $ksess_id or next;
-      my $ksess    = "/Sessions/${ksess_id}";
-      my $fgpid    = $self->query_dbus( $ksess, q(foregroundProcessId) );
-      my $pid      = $self->query_dbus( $ksess, q(processId) );
-
-      push @{ $tabs }, {
-         tab_no    => $term_id + 1,
-         active    => $sess_id == $active_sess,
-         cmd       => $self->_get_executing_command( $pid, $fgpid ),
-         cwd       => $self->_get_current_directory( $pid ),
-         title     => $self->get_tab_title( $sess_id ),
-      };
-   }
-
-   return $tabs;
-}
-
-sub _set_tab_title_for_session {
-   my ($self, $sess_id, $tab_title) = @_;
-
-   my $session_map = $self->_get_session_map;
-   my $ksess_id    = $session_map->{ $sess_id }; defined $ksess_id or return;
-   my $pid         = $self->query_dbus( "/Sessions/${ksess_id}", 'processId' );
-   my $cmd         = [ qw( ps --no-headers -o tty -p ), $pid ];
-   my $tty_num     = (split m{ [/] }mx, $self->run_cmd( $cmd )->out)[ -1 ];
-
-   return $self->set_tab_title( $sess_id, $tab_title, $tty_num );
 }
 
 1;
@@ -195,7 +111,7 @@ Yakuake::Sessions::TraitFor::FileData - Dumps and loads session data
 
 =head1 Version
 
-This documents version v0.6.$Rev: 9 $ of
+This documents version v0.6.$Rev: 10 $ of
 L<Yakuake::Sessions::TraitFor::FileData>
 
 =head1 Description

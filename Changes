@@ -1,6 +1,7 @@
 Revision history for Yakuake::Sessions
 
-0.6.2     2013-06-27 16:50:33
+0.6.10    2013-07-06 19:26:36
+          - Split out ::TraitFor::DBus
           - Rewrote _apply_sessions
           - Added POD method abstracts
           - Fixed bug in set tab title for project

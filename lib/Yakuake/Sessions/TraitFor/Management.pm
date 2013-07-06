@@ -1,9 +1,9 @@
-# @(#)Ident: Management.pm 2013-06-30 20:39 pjf ;
+# @(#)Ident: Management.pm 2013-07-06 17:42 pjf ;
 
 package Yakuake::Sessions::TraitFor::Management;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 9 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 10 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( emit throw );
@@ -76,16 +76,13 @@ Yakuake::Sessions::TraitFor::Management - CRUD methods for session profiles
 
 =head1 Version
 
-This documents version v0.6.$Rev: 9 $ of L<Yakuake::Sessions::TraitFor::Management>
+This documents version v0.6.$Rev: 10 $ of L<Yakuake::Sessions::TraitFor::Management>
 
 =head1 Description
 
 Create, retrieve, update, and delete methods for session profiles
 
 =head1 Configuration and Environment
-
-Requires these attributes; C<dump>, C<load>, C<profile_dir>, and
-C<profile_path>
 
 Defines the following attributes;
 

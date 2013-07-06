@@ -1,14 +1,13 @@
-# @(#)Ident: Base.pm 2013-06-30 20:05 pjf ;
+# @(#)Ident: Base.pm 2013-07-06 14:27 pjf ;
 
 package Yakuake::Sessions::Base;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 9 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 10 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( app_prefix throw trim );
-use File::DataClass::Types  qw( ArrayRef Directory HashRef
-                                NonEmptySimpleStr Path );
+use File::DataClass::Types  qw( Directory HashRef NonEmptySimpleStr Path );
 use Moo;
 use MooX::Options;
 use Scalar::Util            qw( blessed );
@@ -19,10 +18,6 @@ extends q(Class::Usul::Programs);
 has '+config_class' => default => sub { 'Yakuake::Sessions::Config' };
 
 # Public attributes
-option 'dbus'          => is => 'ro',   isa => ArrayRef[NonEmptySimpleStr],
-   documentation       => 'Qt communication interface and service name',
-   default             => sub { [ qw( qdbus org.kde.yakuake ) ] };
-
 option 'config_dir'    => is => 'lazy', isa => Directory,
    documentation       => 'Directory to store configuration files',
    coerce              => Directory->coercion;
@@ -40,22 +35,6 @@ has 'extensions'   => is => 'lazy', isa => HashRef, init_arg => undef;
 
 has 'profile_path' => is => 'lazy', isa => Path, coerce => Path->coercion,
    init_arg        => undef;
-
-# Public methods
-sub query_dbus {
-   my $self = shift; my $cmd = [ @{ $self->dbus }, @_ ];
-
-   return trim $self->run_cmd( $cmd, {
-      debug => $self->debug, err => 'out' } )->stdout;
-}
-
-sub yakuake_sessions {
-   my $self = shift; return $self->query_dbus( q(/yakuake/sessions), @_ );
-}
-
-sub yakuake_tabs {
-   my $self = shift; return $self->query_dbus( q(/yakuake/tabs), @_ );
-}
 
 # Private methods
 sub _build_config_dir {
@@ -117,7 +96,7 @@ Yakuake::Sessions::Base - Attributes and methods for Yakuake session management
 
 =head1 Version
 
-This documents version v0.6.$Rev: 9 $ of L<Yakuake::Sessions::Base>
+This documents version v0.6.$Rev: 10 $ of L<Yakuake::Sessions::Base>
 
 =head1 Description
 
@@ -132,10 +111,6 @@ Defines the following attributes;
 =item C<config_class>
 
 The name of the configuration class
-
-=item C<dbus>
-
-Qt communication interface and service name
 
 =item C<config_dir>
 
@@ -155,23 +130,7 @@ value; C<JSON>
 
 =head1 Subroutines/Methods
 
-=head2 query_dbus
-
-   $self->query_dbus( 'dbus_command' );
-
-Performs C<dbus> commands
-
-=head2 yakuake_sessions
-
-   $self->yakuake_sessions( 'session_command' );
-
-Performs session commands, calls L</query_dbus>
-
-=head2 yakuake_tabs
-
-   $self->yakuake_tabs( 'tabs_command' );
-
-Performs tabs commands, calls L</query_dbus>
+None
 
 =head1 Diagnostics
 
