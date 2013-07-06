@@ -1,18 +1,20 @@
-# @(#)Ident: Config.pm 2013-06-21 13:39 pjf ;
+# @(#)Ident: Config.pm 2013-07-06 18:42 pjf ;
 
 package Yakuake::Sessions::Config;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 11 $ =~ /\d+/gmx );
 
 use Class::Usul::Functions  qw( untaint_identifier );
-use File::DataClass::Types  qw( NonEmptySimpleStr );
+use File::DataClass::Types  qw( NonEmptySimpleStr Num );
 use Moo;
 
 extends q(Class::Usul::Config::Programs);
 
 has 'editor'        => is => 'lazy', isa => NonEmptySimpleStr,
    default          => sub { untaint_identifier $ENV{EDITOR} || 'emacs' };
+
+has 'nap_time'      => is => 'lazy', isa => Num, default => 0.7;
 
 has 'storage_class' => is => 'lazy', isa => NonEmptySimpleStr,
    default          => 'JSON';
@@ -42,7 +44,7 @@ Yakuake::Sessions::Config - Attribute initialization from configuration file
 
 =head1 Version
 
-This documents version v0.6.$Rev: 1 $ of L<Yakuake::Sessions::Config>
+This documents version v0.6.$Rev: 11 $ of L<Yakuake::Sessions::Config>
 
 =head1 Description
 
@@ -59,6 +61,10 @@ Defines the following attributes;
 
 Defaults to the environment variable C<EDITOR> or if unset
 C<emacs>
+
+=item C<nap_time>
+
+Time in seconds to sleep whilst C<DBus> settles down
 
 =item C<storage_class>
 

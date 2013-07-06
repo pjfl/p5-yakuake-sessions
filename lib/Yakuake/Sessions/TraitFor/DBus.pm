@@ -1,9 +1,9 @@
-# @(#)Ident: DBus.pm 2013-07-06 18:19 pjf ;
+# @(#)Ident: DBus.pm 2013-07-06 18:39 pjf ;
 
 package Yakuake::Sessions::TraitFor::DBus;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.1.%d', q$Rev: 10 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.1.%d', q$Rev: 11 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( trim zip );
@@ -22,9 +22,9 @@ option 'dbus'    => is => 'ro',   isa => ArrayRef[NonEmptySimpleStr],
 
 # Public methods
 sub clear_sessions {
-   my $self = shift; $self->raise_session( $self->_get_session_at_tab( 0 ) );
+   my $self = shift;
 
-   $self->_close_session( $_ ) for (reverse $self->_list_sessions);
+   $self->_close_session( $_ ) for ($self->_list_sessions);
 
    return;
 }
@@ -76,7 +76,7 @@ sub maybe_add_session {
    my $old_id  = $sess_id; $self->_yakuake_sessions( 'addSession' );
 
    while ($old_id == $sess_id) {
-      nap 0.6; $sess_id = $self->get_active_session_id;
+      nap $self->config->nap_time; $sess_id = $self->get_active_session_id;
    }
 
    return $sess_id;
@@ -183,7 +183,7 @@ Yakuake::Sessions::TraitFor::DBus - One-line description of the modules purpose
 
 =head1 Version
 
-This documents version v0.1.$Rev: 10 $ of L<Yakuake::Sessions::TraitFor::DBus>
+This documents version v0.1.$Rev: 11 $ of L<Yakuake::Sessions::TraitFor::DBus>
 
 =head1 Description
 
