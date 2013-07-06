@@ -1,9 +1,9 @@
-# @(#)Ident: DBus.pm 2013-07-06 18:39 pjf ;
+# @(#)Ident: DBus.pm 2013-07-06 20:58 pjf ;
 
 package Yakuake::Sessions::TraitFor::DBus;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.1.%d', q$Rev: 11 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 12 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( trim zip );
@@ -11,48 +11,48 @@ use Class::Usul::Time       qw( nap );
 use Class::Usul::Types      qw( ArrayRef NonEmptySimpleStr );
 use English                 qw( -no_match_vars );
 use Moo::Role;
-use MooX::Options;
 
 requires qw( debug run_cmd );
 
 # Public attributes
-option 'dbus'    => is => 'ro',   isa => ArrayRef[NonEmptySimpleStr],
-   documentation => 'Qt communication interface and service name',
-   default       => sub { [ qw( qdbus org.kde.yakuake ) ] };
+has 'dbus' => is => 'lazy', isa => ArrayRef[NonEmptySimpleStr],
+   default => sub { $_[ 0 ]->config->dbus };
 
 # Public methods
-sub clear_sessions {
-   my $self = shift;
+sub apply_sessions {
+   my ($self, $session_tabs) = @_; my $active = FALSE; my $term_id = 0;
 
    $self->_close_session( $_ ) for ($self->_list_sessions);
 
+   for my $tab (@{ $session_tabs }) {
+      my $sess_id = $self->_maybe_add_session( $term_id );
+      my $tty_num = $self->_get_tty_num( $sess_id );
+
+      $self->log->info( $tab->{title}." ${sess_id} ${tty_num}" );
+
+      $self->set_tab_title_for_session( $tty_num.SPC.$tab->{title}, $sess_id );
+      $tab->{cwd   } and $self->_run_cmd_in_tab( 'cd '.$tab->{cwd} );
+      $tab->{cmd   } and $self->_run_cmd_in_tab( $tab->{cmd} );
+      $tab->{active} and $active = $sess_id;
+      $term_id++;
+   }
+
+   $active and $self->_raise_session( $active );
    return;
 }
 
-sub get_active_session_id {
-   return int $_[ 0 ]->_yakuake_sessions( 'activeSessionId' );
-}
-
-sub get_session_map {
-   return { zip $_[ 0 ]->_get_session_ids, $_[ 0 ]->_list_sessions };
-}
-
-sub get_session_process_id {
-   return $_[ 0 ]->_query_dbus( '/Sessions/'.$_[ 1 ], 'processId' );
-}
-
-sub get_session_tabs_from_yakuake {
+sub get_sessions_from_yakuake {
    my $self        = shift;
-   my $active_sess = $self->get_active_session_id;
+   my $active_sess = $self->_get_active_session_id;
    my @term_ids    = $self->_get_terminal_ids;
-   my $session_map = $self->get_session_map;
+   my $session_map = $self->_get_session_map;
    my $tabs        = [];
 
    for my $term_id (0 .. $#term_ids) {
       my $sess_id  = $self->_get_session_at_tab( $term_id );
       my $ksess_id = $session_map->{ $sess_id }; defined $ksess_id or next;
       my $fgpid    = $self->_get_session_fg_process_id( $ksess_id );
-      my $pid      = $self->get_session_process_id( $ksess_id );
+      my $pid      = $self->_get_session_process_id( $ksess_id );
 
       push @{ $tabs }, {
          tab_no    => $term_id + 1,
@@ -66,37 +66,21 @@ sub get_session_tabs_from_yakuake {
    return $tabs;
 }
 
-sub maybe_add_session {
-   my ($self, $term_id) = @_;
+sub set_tab_title_for_session {
+   my ($self, $title, $sess_id) = @_; $title or return;
 
-   my $sess_id = $self->_get_session_at_tab( $term_id );
+   $sess_id //= $self->_get_active_session_id;
 
-   $term_id or return $sess_id;
-
-   my $old_id  = $sess_id; $self->_yakuake_sessions( 'addSession' );
-
-   while ($old_id == $sess_id) {
-      nap $self->config->nap_time; $sess_id = $self->get_active_session_id;
-   }
-
-   return $sess_id;
-}
-
-sub raise_session {
-   return $_[ 0 ]->_yakuake_sessions( 'raiseSession', $_[ 1 ] );
-}
-
-sub run_cmd_in_tab {
-   return $_[ 0 ]->_yakuake_sessions( 'runCommand', $_[ 1 ] );
-}
-
-sub set_session_tab_title {
-   return shift->_yakuake_tabs( 'setTabTitle', @_ );
+   return $self->_yakuake_tabs( 'setTabTitle', $sess_id, $title );
 }
 
 # Private methods
 sub _close_session {
    return $_[ 0 ]->_query_dbus( '/Sessions/'.$_[ 1 ], 'close' );
+}
+
+sub _get_active_session_id {
+   return int $_[ 0 ]->_yakuake_sessions( 'activeSessionId' );
 }
 
 sub _get_current_directory {
@@ -131,6 +115,14 @@ sub _get_session_ids {
             split m{ , }msx, $_[ 0 ]->_yakuake_sessions( 'sessionIdList' ) );
 }
 
+sub _get_session_map {
+   return { zip $_[ 0 ]->_get_session_ids, $_[ 0 ]->_list_sessions };
+}
+
+sub _get_session_process_id {
+   return $_[ 0 ]->_query_dbus( '/Sessions/'.$_[ 1 ], 'processId' );
+}
+
 sub _get_tab_title {
   (my $title = $_[ 0 ]->_yakuake_tabs( 'tabTitle', $_[ 1 ] ))
       =~ s{ \A \d+ \s+ }{}mx;
@@ -142,6 +134,19 @@ sub _get_terminal_ids {
    return ( split m{ , }msx, $_[ 0 ]->_yakuake_sessions( 'terminalIdList' ) );
 }
 
+sub _get_tty_num {
+   my ($self, $sess_id) = @_; defined $sess_id or return '?';
+
+   my $session_map = $self->_get_session_map;
+
+   defined (my $ksess_id = $session_map->{ $sess_id }) or return '?';
+
+   my $pid = $self->_get_session_process_id( $ksess_id );
+   my $cmd = [ qw( ps --no-headers -o tty -p ), $pid ];
+
+   return (split m{ [/] }mx, $self->run_cmd( $cmd )->out)[ -1 ];
+}
+
 sub _list_sessions {
    return ( sort   { $a <=> $b }
             map    { (split m{ / }msx, $_)[ -1 ] }
@@ -149,11 +154,35 @@ sub _list_sessions {
             split m{ \n }msx, $_[ 0 ]->_query_dbus );
 }
 
+sub _maybe_add_session {
+   my ($self, $term_id) = @_;
+
+   my $sess_id = $self->_get_session_at_tab( $term_id );
+
+   $term_id or return $sess_id;
+
+   my $old_id  = $sess_id; $self->_yakuake_sessions( 'addSession' );
+
+   while (not $sess_id or $old_id == $sess_id) {
+      nap $self->config->nap_time; $sess_id = $self->_get_active_session_id;
+   }
+
+   return $sess_id;
+}
+
 sub _query_dbus {
    my $self = shift; my $cmd = [ @{ $self->dbus }, @_ ];
 
    return trim $self->run_cmd( $cmd, {
       debug => $self->debug, err => 'out' } )->stdout;
+}
+
+sub _raise_session {
+   return $_[ 0 ]->_yakuake_sessions( 'raiseSession', $_[ 1 ] );
+}
+
+sub _run_cmd_in_tab {
+   return $_[ 0 ]->_yakuake_sessions( 'runCommand', $_[ 1 ] );
 }
 
 sub _yakuake_sessions {
@@ -174,18 +203,22 @@ __END__
 
 =head1 Name
 
-Yakuake::Sessions::TraitFor::DBus - One-line description of the modules purpose
+Yakuake::Sessions::TraitFor::DBus - Interface with DBus
 
 =head1 Synopsis
 
-   use Yakuake::Sessions::TraitFor::DBus;
-   # Brief but working code examples
+   use Moo;
+
+   extends 'Yakuake::Sessions::Base';
+   with    'Yakuake::Sessions::TraitFor::DBus';
 
 =head1 Version
 
-This documents version v0.1.$Rev: 11 $ of L<Yakuake::Sessions::TraitFor::DBus>
+This documents version v0.6.$Rev: 12 $ of L<Yakuake::Sessions::TraitFor::DBus>
 
 =head1 Description
+
+
 
 =head1 Configuration and Environment
 
@@ -201,48 +234,16 @@ Qt communication interface and service name
 
 =head1 Subroutines/Methods
 
-=head2 clear_sessions
+=head2 apply_sessions
 
-=head2 get_active_session_id
+=head2 get_sessions_from_yakuake
 
-=head2 get_session_map
+=head2 set_tab_title_for_session
 
-=head2 get_session_process_id
+   $self->set_tab_title_for_session( $tab_title, $session_id );
 
-=head2 get_session_tabs_from_yakuake
-
-=head2 maybe_add_session
-
-=head2 raise_session
-
-=head2 run_cmd_in_tab
-
-=head2 set_session_tab_title
-
-=head2 _get_tab_title
-
-   $title_text = $self->get_tab_title( $sess_id );
-
-Returns the tab title text for the session. The session defaults to the
-currently active one
-
-=head2 _query_dbus
-
-   $self->_query_dbus( 'dbus_command' );
-
-Performs C<dbus> commands
-
-=head2 _yakuake_sessions
-
-   $self->_yakuake_sessions( 'session_command' );
-
-Performs session commands, calls L</_query_dbus>
-
-=head2 _yakuake_tabs
-
-   $self->_yakuake_tabs( 'tabs_command' );
-
-Performs tabs commands, calls L</_query_dbus>
+Sets the tab title for the session. The tab title is required. The
+session id defaults to the currently active session
 
 =head1 Diagnostics
 
