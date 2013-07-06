@@ -1,9 +1,9 @@
-# @(#)Ident: DBus.pm 2013-07-06 20:58 pjf ;
+# @(#)Ident: DBus.pm 2013-07-06 21:36 pjf ;
 
 package Yakuake::Sessions::TraitFor::DBus;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 12 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 13 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( trim zip );
@@ -13,10 +13,6 @@ use English                 qw( -no_match_vars );
 use Moo::Role;
 
 requires qw( debug run_cmd );
-
-# Public attributes
-has 'dbus' => is => 'lazy', isa => ArrayRef[NonEmptySimpleStr],
-   default => sub { $_[ 0 ]->config->dbus };
 
 # Public methods
 sub apply_sessions {
@@ -28,7 +24,8 @@ sub apply_sessions {
       my $sess_id = $self->_maybe_add_session( $term_id );
       my $tty_num = $self->_get_tty_num( $sess_id );
 
-      $self->log->info( $tab->{title}." ${sess_id} ${tty_num}" );
+      $self->debug and $self->log->debug
+         ( "Applying ${term_id} ${sess_id} ${tty_num} ".$tab->{title} );
 
       $self->set_tab_title_for_session( $tty_num.SPC.$tab->{title}, $sess_id );
       $tab->{cwd   } and $self->_run_cmd_in_tab( 'cd '.$tab->{cwd} );
@@ -42,20 +39,19 @@ sub apply_sessions {
 }
 
 sub get_sessions_from_yakuake {
-   my $self        = shift;
-   my $active_sess = $self->_get_active_session_id;
-   my @term_ids    = $self->_get_terminal_ids;
-   my $session_map = $self->_get_session_map;
-   my $tabs        = [];
+   my $self        =  shift;
+   my $active_sess =  $self->_get_active_session_id;
+   my @term_ids    =  $self->_get_terminal_ids;
+   my $session_map =  $self->_get_session_map;
+   my $tabs        =  [];
 
    for my $term_id (0 .. $#term_ids) {
-      my $sess_id  = $self->_get_session_at_tab( $term_id );
-      my $ksess_id = $session_map->{ $sess_id }; defined $ksess_id or next;
-      my $fgpid    = $self->_get_session_fg_process_id( $ksess_id );
-      my $pid      = $self->_get_session_process_id( $ksess_id );
+      my $sess_id  =  $self->_get_session_at_tab( $term_id );
+      my $ksess_id =  $session_map->{ $sess_id }; defined $ksess_id or next;
+      my $fgpid    =  $self->_get_session_fg_process_id( $ksess_id );
+      my $pid      =  $self->_get_session_process_id( $ksess_id );
 
       push @{ $tabs }, {
-         tab_no    => $term_id + 1,
          active    => $sess_id == $active_sess,
          cmd       => $self->_get_executing_command( $pid, $fgpid ),
          cwd       => $self->_get_current_directory( $pid ),
@@ -171,7 +167,7 @@ sub _maybe_add_session {
 }
 
 sub _query_dbus {
-   my $self = shift; my $cmd = [ @{ $self->dbus }, @_ ];
+   my $self = shift; my $cmd = [ @{ $self->config->dbus }, @_ ];
 
    return trim $self->run_cmd( $cmd, {
       debug => $self->debug, err => 'out' } )->stdout;
@@ -214,29 +210,29 @@ Yakuake::Sessions::TraitFor::DBus - Interface with DBus
 
 =head1 Version
 
-This documents version v0.6.$Rev: 12 $ of L<Yakuake::Sessions::TraitFor::DBus>
+This documents version v0.6.$Rev: 13 $ of L<Yakuake::Sessions::TraitFor::DBus>
 
 =head1 Description
 
-
+Abstract away the mechanics of communicating with Yakuake via DBus
 
 =head1 Configuration and Environment
 
-Defines the following attributes;
-
-=over 3
-
-=item C<dbus>
-
-Qt communication interface and service name
-
-=back
+Defines no attributes
 
 =head1 Subroutines/Methods
 
 =head2 apply_sessions
 
+   $self->apply_sessions( $session_tabs );
+
+Apply a profile of sessions
+
 =head2 get_sessions_from_yakuake
+
+   $session_tabs = $self->get_sessions_from_yakuake;
+
+Generate a profile of sessions
 
 =head2 set_tab_title_for_session
 
@@ -254,6 +250,8 @@ None
 =over 3
 
 =item L<Class::Usul>
+
+=item L<Moo::Role>
 
 =back
 
