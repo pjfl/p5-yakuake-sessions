@@ -3,7 +3,7 @@
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 5 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Yakuake::Sessions;
 
@@ -39,7 +39,7 @@ Lists the methods available in this program
 
 =head1 VERSION
 
-This documents version v0.6.$Rev: 5 $ of C<yakuake_session>
+This documents version v0.7.$Rev: 1 $ of C<yakuake_session>
 
 =head1 DESCRIPTION
 

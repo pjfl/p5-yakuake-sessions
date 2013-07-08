@@ -1,19 +1,15 @@
-# @(#)Ident: Config.pm 2013-07-06 20:55 pjf ;
+# @(#)Ident: Config.pm 2013-07-08 19:42 pjf ;
 
 package Yakuake::Sessions::Config;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 12 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Class::Usul::Functions  qw( untaint_identifier );
-use File::DataClass::Types  qw( ArrayRef NonEmptySimpleStr Num );
+use File::DataClass::Types  qw( NonEmptySimpleStr Num );
 use Moo;
 
 extends q(Class::Usul::Config::Programs);
-
-has 'dbus'          => is => 'lazy', isa => ArrayRef[NonEmptySimpleStr],
-   documentation    => 'Qt communication interface and service name',
-   default          => sub { [ qw( qdbus org.kde.yakuake ) ] };
 
 has 'editor'        => is => 'lazy', isa => NonEmptySimpleStr,
    default          => sub { untaint_identifier $ENV{EDITOR} || 'emacs' };
@@ -48,7 +44,7 @@ Yakuake::Sessions::Config - Attribute initialization from configuration file
 
 =head1 Version
 
-This documents version v0.6.$Rev: 12 $ of L<Yakuake::Sessions::Config>
+This documents version v0.7.$Rev: 1 $ of L<Yakuake::Sessions::Config>
 
 =head1 Description
 

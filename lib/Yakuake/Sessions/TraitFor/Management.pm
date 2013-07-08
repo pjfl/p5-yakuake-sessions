@@ -3,7 +3,7 @@
 package Yakuake::Sessions::TraitFor::Management;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 10 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( emit throw );
@@ -76,7 +76,7 @@ Yakuake::Sessions::TraitFor::Management - CRUD methods for session profiles
 
 =head1 Version
 
-This documents version v0.6.$Rev: 10 $ of L<Yakuake::Sessions::TraitFor::Management>
+This documents version v0.7.$Rev: 1 $ of L<Yakuake::Sessions::TraitFor::Management>
 
 =head1 Description
 

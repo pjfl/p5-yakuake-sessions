@@ -1,5 +1,8 @@
 Revision history for Yakuake::Sessions
 
+0.7.1     2013-07-09 00:28:41
+          - Now uses Net::DBus
+
 0.6.10    2013-07-06 19:26:36
           - Split out ::TraitFor::DBus
           - Rewrote _apply_sessions

@@ -1,22 +1,41 @@
-# @(#)Ident: DBus.pm 2013-07-08 18:19 pjf ;
+# @(#)Ident: DBus.pm 2013-07-08 23:03 pjf ;
 
 package Yakuake::Sessions::TraitFor::DBus;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 14 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( trim zip );
 use Class::Usul::Time       qw( nap );
-use Class::Usul::Types      qw( ArrayRef NonEmptySimpleStr );
+use Class::Usul::Types      qw( LoadableClass );
 use English                 qw( -no_match_vars );
 use Moo::Role;
 
 requires qw( debug run_cmd );
 
+# Public attribuetes
+has 'dbus_class' => is => 'lazy', isa => LoadableClass, default => 'Net::DBus';
+
+has 'service'    => is => 'lazy', isa => sub { $_[ 0 ]->can( 'get_service' ) },
+   default       => sub { $_[ 0 ]->dbus->get_service( 'org.kde.yakuake' ) },
+   init_arg      => undef;
+
+has 'sessions'   => is => 'lazy', isa => sub { $_[ 0 ]->can( 'get_object' ) },
+   default       => sub { $_[ 0 ]->service->get_object( '/yakuake/sessions' ) },
+   init_arg      => undef;
+
+has 'tabs'       => is => 'lazy', isa => sub { $_[ 0 ]->can( 'get_object' ) },
+   default       => sub { $_[ 0 ]->service->get_object( '/yakuake/tabs' ) },
+   init_arg      => undef;
+
+# Private attributes
+has '_dbus'      => is => 'lazy', isa => sub { $_[ 0 ]->can( 'session' ) },
+   default       => sub { $_[ 0 ]->dbus_class->session }, reader => 'dbus';
+
 # Public methods
 sub apply_sessions {
-   my ($self, $session_tabs) = @_; my $active = FALSE; my $tab_no = 0;
+   my ($self, $session_tabs) = @_; my $active; my $tab_no = 0;
 
    $self->_close_session( $_ ) for ($self->_list_sessions);
 
@@ -28,24 +47,24 @@ sub apply_sessions {
          ( "Applying ${tab_no} ${sess_id} ${tty_num} ".$tab->{title} );
 
       $self->set_tab_title_for_session( $tty_num.SPC.$tab->{title}, $sess_id );
-      $tab->{cwd   } and $self->_run_cmd_in_tab( 'cd '.$tab->{cwd} );
-      $tab->{cmd   } and $self->_run_cmd_in_tab( $tab->{cmd} );
+      $tab->{cwd   } and $self->sessions->runCommand( 'cd '.$tab->{cwd} );
+      $tab->{cmd   } and $self->sessions->runCommand( $tab->{cmd} );
       $tab->{active} and $active = $sess_id;
       $tab_no++;
    }
 
-   $active and $self->_raise_session( $active );
+   defined $active and $self->sessions->raiseSession( $active );
    return;
 }
 
 sub get_sessions_from_yakuake {
    my $self        =  shift;
-   my $active_sess =  $self->_get_active_session_id;
-   my @term_ids    =  $self->_get_terminal_ids;
    my $session_map =  $self->_get_session_map;
+   my $num_sesses  =  (scalar keys %{ $session_map }) - 1;
+   my $active_sess =  $self->_get_active_session_id;
    my $tabs        =  [];
 
-   for my $tab_no (0 .. $#term_ids) {
+   for my $tab_no (0 .. $num_sesses) {
       my $sess_id  =  $self->_get_session_at_tab( $tab_no );
       my $ksess_id =  $session_map->{ $sess_id }; defined $ksess_id or next;
       my $fgpid    =  $self->_get_session_fg_process_id( $ksess_id );
@@ -67,16 +86,16 @@ sub set_tab_title_for_session {
 
    $sess_id //= $self->_get_active_session_id;
 
-   return $self->_yakuake_tabs( 'setTabTitle', $sess_id, $title );
+   return $self->tabs->setTabTitle( $sess_id, $title );
 }
 
 # Private methods
 sub _close_session {
-   return $_[ 0 ]->_query_dbus( '/Sessions/'.$_[ 1 ], 'close' );
+   return $_[ 0 ]->_get_session_object( $_[ 1 ] )->close;
 }
 
 sub _get_active_session_id {
-   return int $_[ 0 ]->_yakuake_sessions( 'activeSessionId' );
+   return int $_[ 0 ]->sessions->activeSessionId;
 }
 
 sub _get_current_directory {
@@ -98,36 +117,35 @@ sub _get_executing_command {
 }
 
 sub _get_session_at_tab {
-   return int $_[ 0 ]->_yakuake_tabs( 'sessionAtTab', $_[ 1 ] );
+   return int $_[ 0 ]->tabs->sessionAtTab( $_[ 1 ] );
 }
 
 sub _get_session_fg_process_id {
-   return $_[ 0 ]->_query_dbus( '/Sessions/'.$_[ 1 ], 'foregroundProcessId' );
+   return $_[ 0 ]->_get_session_object( $_[ 1 ] )->foregroundProcessId;
 }
 
 sub _get_session_ids {
    return ( sort   { $a <=> $b }
             map    { int $_ }
-            split m{ , }msx, $_[ 0 ]->_yakuake_sessions( 'sessionIdList' ) );
+            split m{ , }msx, $_[ 0 ]->sessions->sessionIdList );
 }
 
 sub _get_session_map {
    return { zip $_[ 0 ]->_get_session_ids, $_[ 0 ]->_list_sessions };
 }
 
+sub _get_session_object {
+   return $_[ 0 ]->service->get_object( '/Sessions/'.$_[ 1 ] );
+}
+
 sub _get_session_process_id {
-   return $_[ 0 ]->_query_dbus( '/Sessions/'.$_[ 1 ], 'processId' );
+   return $_[ 0 ]->_get_session_object( $_[ 1 ] )->processId;
 }
 
 sub _get_tab_title {
-  (my $title = $_[ 0 ]->_yakuake_tabs( 'tabTitle', $_[ 1 ] ))
-      =~ s{ \A \d+ \s+ }{}mx;
+  (my $title = $_[ 0 ]->tabs->tabTitle( $_[ 1 ] )) =~ s{ \A \d+ \s+ }{}mx;
 
    return $title;
-}
-
-sub _get_terminal_ids {
-   return ( split m{ , }msx, $_[ 0 ]->_yakuake_sessions( 'terminalIdList' ) );
 }
 
 sub _get_tty_num {
@@ -145,9 +163,10 @@ sub _get_tty_num {
 
 sub _list_sessions {
    return ( sort   { $a <=> $b }
-            map    { (split m{ / }msx, $_)[ -1 ] }
-            grep   { m{ /Sessions/ }msx }
-            split m{ \n }msx, $_[ 0 ]->_query_dbus );
+            map    { m{ name = [\"] (\d+) [\"] }mx }
+            grep   { m{ <node \s+ name }mx }
+            split m{ \n }msx,
+            $_[ 0 ]->service->get_object( '/Sessions' )->Introspect );
 }
 
 sub _maybe_add_session {
@@ -155,36 +174,13 @@ sub _maybe_add_session {
 
    $tab_no > 0 or return $sess_id;
 
-   my $old_id = $sess_id; $self->_yakuake_sessions( 'addSession' );
+   my $old_id = $sess_id; $self->sessions->addSession;
 
    while (not length $sess_id or $old_id == $sess_id) {
       nap $self->config->nap_time; $sess_id = $self->_get_active_session_id;
    }
 
    return $sess_id;
-}
-
-sub _query_dbus {
-   my $self = shift; my $cmd = [ @{ $self->config->dbus }, @_ ];
-
-   return trim $self->run_cmd( $cmd, {
-      debug => $self->debug, err => 'out' } )->stdout;
-}
-
-sub _raise_session {
-   return $_[ 0 ]->_yakuake_sessions( 'raiseSession', $_[ 1 ] );
-}
-
-sub _run_cmd_in_tab {
-   return $_[ 0 ]->_yakuake_sessions( 'runCommand', $_[ 1 ] );
-}
-
-sub _yakuake_sessions {
-   return shift->_query_dbus( '/yakuake/sessions', @_ );
-}
-
-sub _yakuake_tabs {
-   return shift->_query_dbus( '/yakuake/tabs', @_ );
 }
 
 1;
@@ -208,7 +204,7 @@ Yakuake::Sessions::TraitFor::DBus - Interface with DBus
 
 =head1 Version
 
-This documents version v0.6.$Rev: 14 $ of L<Yakuake::Sessions::TraitFor::DBus>
+This documents version v0.7.$Rev: 1 $ of L<Yakuake::Sessions::TraitFor::DBus>
 
 =head1 Description
 
@@ -216,7 +212,27 @@ Abstract away the mechanics of communicating with Yakuake via DBus
 
 =head1 Configuration and Environment
 
-Defines no attributes
+Defines the following attributes;
+
+=over 3
+
+=item C<dbus_class>
+
+A lazy loaded class which defaults to L<Net::DBus>
+
+=item C<service>
+
+A lazy object ref for the C<org.kde.yakuake> DBus service
+
+=item C<sessions>
+
+A lazy object ref for the C</yakuake/sessions> DBus service object
+
+=item C<tabs>
+
+A lazy object ref for the C</yakuake/tabs> DBus service object
+
+=back
 
 =head1 Subroutines/Methods
 
