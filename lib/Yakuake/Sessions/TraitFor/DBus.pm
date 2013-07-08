@@ -1,9 +1,9 @@
-# @(#)Ident: DBus.pm 2013-07-06 21:36 pjf ;
+# @(#)Ident: DBus.pm 2013-07-08 18:19 pjf ;
 
 package Yakuake::Sessions::TraitFor::DBus;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 13 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 14 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( trim zip );
@@ -16,22 +16,22 @@ requires qw( debug run_cmd );
 
 # Public methods
 sub apply_sessions {
-   my ($self, $session_tabs) = @_; my $active = FALSE; my $term_id = 0;
+   my ($self, $session_tabs) = @_; my $active = FALSE; my $tab_no = 0;
 
    $self->_close_session( $_ ) for ($self->_list_sessions);
 
    for my $tab (@{ $session_tabs }) {
-      my $sess_id = $self->_maybe_add_session( $term_id );
+      my $sess_id = $self->_maybe_add_session( $tab_no );
       my $tty_num = $self->_get_tty_num( $sess_id );
 
       $self->debug and $self->log->debug
-         ( "Applying ${term_id} ${sess_id} ${tty_num} ".$tab->{title} );
+         ( "Applying ${tab_no} ${sess_id} ${tty_num} ".$tab->{title} );
 
       $self->set_tab_title_for_session( $tty_num.SPC.$tab->{title}, $sess_id );
       $tab->{cwd   } and $self->_run_cmd_in_tab( 'cd '.$tab->{cwd} );
       $tab->{cmd   } and $self->_run_cmd_in_tab( $tab->{cmd} );
       $tab->{active} and $active = $sess_id;
-      $term_id++;
+      $tab_no++;
    }
 
    $active and $self->_raise_session( $active );
@@ -45,8 +45,8 @@ sub get_sessions_from_yakuake {
    my $session_map =  $self->_get_session_map;
    my $tabs        =  [];
 
-   for my $term_id (0 .. $#term_ids) {
-      my $sess_id  =  $self->_get_session_at_tab( $term_id );
+   for my $tab_no (0 .. $#term_ids) {
+      my $sess_id  =  $self->_get_session_at_tab( $tab_no );
       my $ksess_id =  $session_map->{ $sess_id }; defined $ksess_id or next;
       my $fgpid    =  $self->_get_session_fg_process_id( $ksess_id );
       my $pid      =  $self->_get_session_process_id( $ksess_id );
@@ -151,15 +151,13 @@ sub _list_sessions {
 }
 
 sub _maybe_add_session {
-   my ($self, $term_id) = @_;
+   my ($self, $tab_no) = @_; my $sess_id = $self->_get_active_session_id;
 
-   my $sess_id = $self->_get_session_at_tab( $term_id );
+   $tab_no > 0 or return $sess_id;
 
-   $term_id or return $sess_id;
+   my $old_id = $sess_id; $self->_yakuake_sessions( 'addSession' );
 
-   my $old_id  = $sess_id; $self->_yakuake_sessions( 'addSession' );
-
-   while (not $sess_id or $old_id == $sess_id) {
+   while (not length $sess_id or $old_id == $sess_id) {
       nap $self->config->nap_time; $sess_id = $self->_get_active_session_id;
    }
 
@@ -210,7 +208,7 @@ Yakuake::Sessions::TraitFor::DBus - Interface with DBus
 
 =head1 Version
 
-This documents version v0.6.$Rev: 13 $ of L<Yakuake::Sessions::TraitFor::DBus>
+This documents version v0.6.$Rev: 14 $ of L<Yakuake::Sessions::TraitFor::DBus>
 
 =head1 Description
 
