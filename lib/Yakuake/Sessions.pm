@@ -1,10 +1,10 @@
-# @(#)Ident: Sessions.pm 2013-07-06 14:18 pjf ;
+# @(#)Ident: Sessions.pm 2013-07-09 00:40 pjf ;
 
 package Yakuake::Sessions;
 
 use 5.01;
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 2 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Moo;
@@ -35,7 +35,7 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 =head1 Version
 
-This documents version v0.7.$Rev: 1 $ of L<Yakuake::Sessions>
+This documents version v0.7.$Rev: 2 $ of L<Yakuake::Sessions>
 
 =head1 Synopsis
 
@@ -78,13 +78,13 @@ might look like;
       "tab_title": "Oo.!.oO"
    }
 
-Defines the following list of attributes;
+See the L<config class|Yakuake::Sessions::Config> for the full list of
+configuration attributes
+
+Defines the following list of attributes which can be set from the command
+line;
 
 =over 3
-
-=item C<dbus>
-
-Qt communication interface and service name
 
 =item C<config_dir>
 
@@ -109,11 +109,6 @@ Directory to store the session profiles in
 
 File format used to store session data. Defaults to the config class
 value; C<JSON>
-
-=item C<tab_title>
-
-Default title to apply to tabs. Defaults to the config class value;
-C<Shell>
 
 =back
 
@@ -192,6 +187,9 @@ Display the contents of the specified session profile
 Turning on debug, add C<-D> to the command line, causes the session dump
 and load subroutines to display the session tabs data
 
+The C<list_methods> command lists all of the callable the methods and
+their abstracts
+
 =head1 Dependencies
 
 =over 3
@@ -200,7 +198,7 @@ and load subroutines to display the session tabs data
 
 =item L<File::DataClass>
 
-=item L<Yakuake::Sessions::Config>
+=item L<Net::DBus>
 
 =back
 

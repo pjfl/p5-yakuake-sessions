@@ -1,9 +1,9 @@
-# @(#)Ident: FileData.pm 2013-07-06 21:11 pjf ;
+# @(#)Ident: FileData.pm 2013-07-09 12:22 pjf ;
 
 package Yakuake::Sessions::TraitFor::FileData;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 2 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( throw );
@@ -52,7 +52,7 @@ sub load : method {
       $self->apply_sessions( $self->_get_sessions_from_file ); return OK;
    }
 
-   my $cmd  = 'nohup '.$self->config->pathname.SPC.$self->debug_flag.SPC;
+   my $cmd  = 'nohup '.$self->config->pathname.SPC.$self->debug_flag;
       $cmd .= " -o detached=1 load ${path}";
    my $out  = $self->config->logsdir->catfile( 'load_session.out' );
 
@@ -93,7 +93,7 @@ Yakuake::Sessions::TraitFor::FileData - Dumps and loads session data
 
 =head1 Version
 
-This documents version v0.7.$Rev: 1 $ of
+This documents version v0.7.$Rev: 2 $ of
 L<Yakuake::Sessions::TraitFor::FileData>
 
 =head1 Description

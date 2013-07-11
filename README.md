@@ -4,7 +4,7 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 # Version
 
-This documents version v0.7.$Rev: 1 $ of [Yakuake::Sessions](https://metacpan.org/module/Yakuake::Sessions)
+This documents version v0.7.$Rev: 2 $ of [Yakuake::Sessions](https://metacpan.org/module/Yakuake::Sessions)
 
 # Synopsis
 
@@ -47,11 +47,11 @@ might look like;
        "tab_title": "Oo.!.oO"
     }
 
-Defines the following list of attributes;
+See the [config class](https://metacpan.org/module/Yakuake::Sessions::Config) for the full list of
+configuration attributes
 
-- `dbus`
-
-    Qt communication interface and service name
+Defines the following list of attributes which can be set from the command
+line;
 
 - `config_dir`
 
@@ -76,11 +76,6 @@ Defines the following list of attributes;
 
     File format used to store session data. Defaults to the config class
     value; `JSON`
-
-- `tab_title`
-
-    Default title to apply to tabs. Defaults to the config class value;
-    `Shell`
 
 Modifies these methods in the base class
 
@@ -153,11 +148,14 @@ Display the contents of the specified session profile
 Turning on debug, add `-D` to the command line, causes the session dump
 and load subroutines to display the session tabs data
 
+The `list_methods` command lists all of the callable the methods and
+their abstracts
+
 # Dependencies
 
 - [Class::Usul](https://metacpan.org/module/Class::Usul)
 - [File::DataClass](https://metacpan.org/module/File::DataClass)
-- [Yakuake::Sessions::Config](https://metacpan.org/module/Yakuake::Sessions::Config)
+- [Net::DBus](https://metacpan.org/module/Net::DBus)
 
 # Incompatibilities
 

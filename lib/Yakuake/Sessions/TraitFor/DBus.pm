@@ -1,9 +1,9 @@
-# @(#)Ident: DBus.pm 2013-07-08 23:03 pjf ;
+# @(#)Ident: DBus.pm 2013-07-10 22:44 pjf ;
 
 package Yakuake::Sessions::TraitFor::DBus;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 2 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( trim zip );
@@ -37,16 +37,18 @@ has '_dbus'      => is => 'lazy', isa => sub { $_[ 0 ]->can( 'session' ) },
 sub apply_sessions {
    my ($self, $session_tabs) = @_; my $active; my $tab_no = 0;
 
-   $self->_close_session( $_ ) for ($self->_list_sessions);
+   $self->_close_session( $_ ) for ($self->_get_ksession_ids);
 
    for my $tab (@{ $session_tabs }) {
-      my $sess_id = $self->_maybe_add_session( $tab_no );
-      my $tty_num = $self->_get_tty_num( $sess_id );
+      my $sess_id  = $self->_maybe_add_session( $tab_no );
+      my $ksess_id = $self->_get_session_map->{ $sess_id };
+      my $tty_num  = $self->_get_tty_num( $ksess_id );
+      my $title    = $tty_num.SPC.$tab->{title};
 
       $self->debug and $self->log->debug
-         ( "Applying ${tab_no} ${sess_id} ${tty_num} ".$tab->{title} );
+         ( "Applying ${tab_no} ${sess_id} ${ksess_id} ${title}" );
 
-      $self->set_tab_title_for_session( $tty_num.SPC.$tab->{title}, $sess_id );
+      $self->set_tab_title_for_session( $title, $sess_id );
       $tab->{cwd   } and $self->sessions->runCommand( 'cd '.$tab->{cwd} );
       $tab->{cmd   } and $self->sessions->runCommand( $tab->{cmd} );
       $tab->{active} and $active = $sess_id;
@@ -91,7 +93,14 @@ sub set_tab_title_for_session {
 
 # Private methods
 sub _close_session {
-   return $_[ 0 ]->_get_session_object( $_[ 1 ] )->close;
+   my ($self, $ksess_id) = @_;
+
+   my $fgpid = $self->_get_session_fg_process_id( $ksess_id );
+   my $pid   = $self->_get_session_process_id( $ksess_id );
+
+   $pid != $fgpid and kill 'TERM', $fgpid;
+
+   return $self->_get_session_object( $ksess_id )->close;
 }
 
 sub _get_active_session_id {
@@ -116,6 +125,14 @@ sub _get_executing_command {
    return $cmd =~ m{ \A perl (.+) $PROGRAM_NAME }msx ? NUL : $cmd;
 }
 
+sub _get_ksession_ids {
+   return ( sort   { $a <=> $b }
+            map    { m{ name = [\"] (\d+) [\"] }mx }
+            grep   { m{ <node \s+ name }mx }
+            split m{ \n }msx,
+            $_[ 0 ]->service->get_object( '/Sessions' )->Introspect );
+}
+
 sub _get_session_at_tab {
    return int $_[ 0 ]->tabs->sessionAtTab( $_[ 1 ] );
 }
@@ -131,7 +148,7 @@ sub _get_session_ids {
 }
 
 sub _get_session_map {
-   return { zip $_[ 0 ]->_get_session_ids, $_[ 0 ]->_list_sessions };
+   return { zip $_[ 0 ]->_get_session_ids, $_[ 0 ]->_get_ksession_ids };
 }
 
 sub _get_session_object {
@@ -149,24 +166,12 @@ sub _get_tab_title {
 }
 
 sub _get_tty_num {
-   my ($self, $sess_id) = @_; defined $sess_id or return '?';
-
-   my $session_map = $self->_get_session_map;
-
-   defined (my $ksess_id = $session_map->{ $sess_id }) or return '?';
+   my ($self, $ksess_id) = @_; defined $ksess_id or return '?';
 
    my $pid = $self->_get_session_process_id( $ksess_id );
    my $cmd = [ qw( ps --no-headers -o tty -p ), $pid ];
 
    return (split m{ [/] }mx, $self->run_cmd( $cmd )->out)[ -1 ];
-}
-
-sub _list_sessions {
-   return ( sort   { $a <=> $b }
-            map    { m{ name = [\"] (\d+) [\"] }mx }
-            grep   { m{ <node \s+ name }mx }
-            split m{ \n }msx,
-            $_[ 0 ]->service->get_object( '/Sessions' )->Introspect );
 }
 
 sub _maybe_add_session {
@@ -204,7 +209,7 @@ Yakuake::Sessions::TraitFor::DBus - Interface with DBus
 
 =head1 Version
 
-This documents version v0.7.$Rev: 1 $ of L<Yakuake::Sessions::TraitFor::DBus>
+This documents version v0.7.$Rev: 2 $ of L<Yakuake::Sessions::TraitFor::DBus>
 
 =head1 Description
 
@@ -266,6 +271,8 @@ None
 =item L<Class::Usul>
 
 =item L<Moo::Role>
+
+=item L<Net::DBus>
 
 =back
 

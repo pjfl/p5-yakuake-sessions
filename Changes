@@ -1,6 +1,7 @@
 Revision history for Yakuake::Sessions
 
-0.7.1     2013-07-09 00:28:41
+0.7.2     2013-07-11 01:14:56
+          - Close session kills forground process
           - Now uses Net::DBus
 
 0.6.10    2013-07-06 19:26:36
