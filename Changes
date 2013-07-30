@@ -1,6 +1,7 @@
 Revision history for Yakuake::Sessions
 
-0.7.4     2013-07-30 01:09:08
+0.7.5     2013-07-30 14:33:25
+          - New method for CPANTesting min Perl ver
           - Added fremen and frogman to tier gruber
           - Aborting Bingoes failed see df276fba-f57c-11e2-8c80-50d7c5c10595
             No choice but to send this smoker to sleep 10 while 1.
