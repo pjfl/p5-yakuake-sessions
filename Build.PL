@@ -1,19 +1,19 @@
-# @(#)Ident: Build.PL 2013-07-28 18:48 pjf ;
+# @(#)Ident: Build.PL 2013-08-07 17:49 pjf ;
 
 use strict;
 use warnings;
 use inc::Bob; # Module::Build subclass
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 3 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 Bob->new( {
    module    => 'Yakuake::Sessions',
    home_page => 'http://www.roxsoft.co.uk',
    requires  => {
-      'perl'             => 5.01,
+      'perl'             => 5.010001,
       'namespace::sweep' => 0.006,
-      'Class::Usul'      => q(0.22.0),
-      'File::DataClass'  => q(0.22.0),
-      'Moo'              => 1.002,
+      'Class::Usul'      => q(0.23.0),
+      'File::DataClass'  => q(0.23.0),
+      'Moo'              => 1.003,
       'MooX::Options'    => 3.83,
       'Net::DBus'        => q(1.0.0), },
    recommends            => {

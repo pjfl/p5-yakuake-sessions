@@ -1,5 +1,8 @@
 Revision history for Yakuake::Sessions
 
+0.8.1     2013-08-07 18:49:48
+          - Reset min perl testing to original behaviour
+
 0.7.5     2013-07-30 14:33:25
           - New method for CPANTesting min Perl ver
           - Added fremen and frogman to tier gruber
