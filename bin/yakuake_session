@@ -1,9 +1,9 @@
 #!/usr/bin/env perl
-# @(#)Ident: yakuake_session 2013-06-30 02:33 pjf ;
+# @(#)Ident: yakuake_session 2013-08-15 22:30 pjf ;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Yakuake::Sessions;
 
@@ -39,7 +39,7 @@ Lists the methods available in this program
 
 =head1 VERSION
 
-This documents version v0.8.$Rev: 1 $ of C<yakuake_session>
+This documents version v0.9.$Rev: 1 $ of C<yakuake_session>
 
 =head1 DESCRIPTION
 
@@ -65,11 +65,11 @@ Name of method to call. Required, can be first non option argument
 
 =item B<-D        >
 
-Turn debugging on. Promps if interactive
+Turn debugging on. Prompts if interactive
 
 =item B<--encoding>
 
-Decodes/encodes input/output using the value. Defaults to I<UTF-8>
+Decodes/encodes input/output using the value. Defaults to C<UTF-8>
 
 =item B<-h        >
 
@@ -107,7 +107,7 @@ Displays the version number of the program class
 
 =head1 DIAGNOSTICS
 
-Prints errors to stderr
+Prints errors to C<stderr>
 
 =head1 EXIT STATUS
 

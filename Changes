@@ -1,5 +1,8 @@
 Revision history for Yakuake::Sessions
 
+0.9.1     2013-08-15 23:33:26
+          - Switched to Dist::Zilla
+
 0.8.1     2013-08-07 18:49:48
           - Reset min perl testing to original behaviour
 
@@ -55,3 +58,5 @@ Revision history for Yakuake::Sessions
 
 0.1       2012-11-04 03:43:11
           - Initial Release
+
+

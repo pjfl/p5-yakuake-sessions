@@ -1,35 +1,29 @@
-# @(#)Ident: Build.PL 2013-08-07 17:49 pjf ;
+# @(#)$Ident: DZ_Build.PL 2013-08-15 13:04 pjf ;
 
 use strict;
 use warnings;
-use inc::Bob; # Module::Build subclass
-use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
-Bob->new( {
-   module    => 'Yakuake::Sessions',
-   home_page => 'http://www.roxsoft.co.uk',
-   requires  => {
-      'perl'             => 5.010001,
-      'namespace::sweep' => 0.006,
-      'Class::Usul'      => q(0.23.0),
-      'File::DataClass'  => q(0.23.0),
-      'Moo'              => 1.003,
-      'MooX::Options'    => 3.83,
-      'Net::DBus'        => q(1.0.0), },
-   recommends            => {
-      'App::cpanminus'   => 1.6005, },
-   configure_requires    => {
-      'version'          => 0.88,
-      'Module::Build'    => 0.4004, },
-   build_requires        => {
-      'version'          => 0.88,
-      'Module::Build'    => 0.4004, },
-   no_index_dir          => [ qw(bin examples inc share t) ],
-} )->create_build_script; # Goal!
+use Module::Build;
 
-# Local Variables:
-# mode: perl
-# eval: (load-project-state "yakuake-sessions")
-# tab-title: Sessions
-# tab-width: 3
-# End:
+sub whimper { print {*STDOUT} $_[ 0 ]."\n"; exit 0 }
+
+my $perl_ver = ##{ $meta2{prereqs}->{runtime}->{requires}->{perl} ##};
+my $name     = '##{ $zilla->name ##}'; $name =~ s{ - }{::}gmx;
+
+$] >= $perl_ver or $ENV{PERL5_CPANPLUS_IS_VERSION}
+   or whimper "Minimum required Perl version is ${perl_ver}";
+
+Module::Build->subclass( code => do { local $/; <DATA> } )->new(
+  'module_name' => $name,
+  'notes'       => { min_perl_version => $perl_ver },
+##{ $plugin->get_prereqs( 1 ) ##}
+##{ $plugin->get_default('share_dir') ##}
+)->create_build_script;
+
+exit 0;
+
+__DATA__
+
+sub _normalize_prereqs { # Dynamic config
+   my $self = shift; my $p = $self->SUPER::_normalize_prereqs; return $p;
+}

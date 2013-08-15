@@ -3,7 +3,7 @@
 package Yakuake::Sessions::TraitFor::DBus;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( trim zip );
@@ -209,7 +209,7 @@ Yakuake::Sessions::TraitFor::DBus - Interface with DBus
 
 =head1 Version
 
-This documents version v0.8.$Rev: 1 $ of L<Yakuake::Sessions::TraitFor::DBus>
+This documents version v0.9.$Rev: 1 $ of L<Yakuake::Sessions::TraitFor::DBus>
 
 =head1 Description
 
