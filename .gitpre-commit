@@ -1,14 +1,14 @@
 #!/usr/bin/env perl
-# @(#)Ident: gitpre-commit 2013-04-21 13:58 pjf ;
 
+use 5.01;
 use strict;
 use warnings;
-use lib qw(lib);
-use version; our $VERSION = qv( '0.1' );
+use lib qw( lib );
+use version; our $VERSION = qv( '0.4' );
 
-use Date::Format          qw(time2str);
-use English               qw(-no_match_vars);
-use File::Spec::Functions qw(catfile updir);
+use Date::Format          qw( time2str );
+use English               qw( -no_match_vars );
+use File::Spec::Functions qw( catfile updir );
 use Module::Metadata;
 use Perl::Version;
 
@@ -61,7 +61,7 @@ if (defined $project_file) {
    if (-f $rev_file) { $rev = __read_all_from $rev_file; chomp $rev; $rev++ }
 }
 
-if (defined $rev and qx{ git branch 2>/dev/null } =~ m{ \A [*] \s+ master }mx) {
+if (defined $rev and qx{ git branch 2>/dev/null } =~ m{ ^ [*] \s+ master }mx) {
    my @stat   = split m{ \n }mx, qx{ git status --porcelain };
    my $ignore = __get_ignore_rev_regex;
    my $found  = 0;
@@ -83,31 +83,29 @@ if (defined $rev and qx{ git branch 2>/dev/null } =~ m{ \A [*] \s+ master }mx) {
    $found and __write_data_to $rev_file, "${rev}\n";
 }
 
-my $changes_file = 'Changes';
+my $change_file = 'Changes';
 
-if (-f $changes_file) {
-   my $changes     = __read_all_from $changes_file;
-   my $changes_ver = qv( (split q( ),
-                          (grep { m{ \A v?[0-9._]+ }mx } split m{ [\n] }mx,
-                           $changes)[ 0 ] || q())[ 0 ] || '0.1.1' );
-   my $meta        = defined $module
-                   ? Module::Metadata->new_from_module( $module ) : undef;
-   my $module_ver  = $meta ? $meta->version : qv( '0.1.1' );
+if (-f $change_file) {
+   my $changes    = __read_all_from $change_file;
+   my $change_ver = qv( (split q( ),
+                         (grep { m{ \A v? [0-9._]+ }mx } split m{ [\n] }mx,
+                          $changes)[ 0 ] || q())[ 0 ] || '0.1.1' );
+   my $meta       = defined $module
+                  ? Module::Metadata->new_from_module( $module ) : undef;
+   my $module_ver = $meta ? $meta->version : qv( '0.1.1' );
 
-   $meta or warn "No meta object for module ${module}";
+   $meta or warn 'No meta object for module '.($module // '<undef>');
 
-   if ($module_ver > $changes_ver) {
+   my $pmv = Perl::Version->new( $module_ver ); $pmv->components( 2 );
+   my $pcv = Perl::Version->new( $change_ver ); $pcv->components( 2 );
+
+   if ($pmv > $pcv) {
       my $stamp  = time2str( '%Y-%m-%d %H:%M:%S', time );
       my $header = sprintf "%-9.9s %s", $module_ver, $stamp;
-      my $pmv    = Perl::Version->new( $module_ver  ); $pmv->components( 2 );
-      my $pcv    = Perl::Version->new( $changes_ver ); $pcv->components( 2 );
 
-      if ($pmv > $pcv) { $changes =~ s{ ^ $ }{\n$header}mx }
-      else { $changes =~ s{ ^ v?[0-9._]+ \s* [^\n]* $ }{$header}mx }
+      $changes =~ s{ ^ $ }{\n$header}mx; __write_data_to $change_file, $changes;
 
-      __write_data_to $changes_file, $changes;
-
-      my $cmd = "git add ${changes_file}"; qx{ $cmd };
+      my $gitcmd = "git add ${change_file}"; qx{ $gitcmd };
    }
 }
 

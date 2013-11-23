@@ -3,7 +3,7 @@
 package Yakuake::Sessions::TraitFor::TabTitles;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 3 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( throw );
@@ -57,7 +57,7 @@ Yakuake::Sessions::TraitFor::TabTitles - Displays the tab title text
 
 =head1 Version
 
-This documents version v0.10.$Rev: 3 $ of
+This documents version v0.11.$Rev: 1 $ of
 L<Yakuake::Sessions::TraitFor::TabTitles>
 
 =head1 Description

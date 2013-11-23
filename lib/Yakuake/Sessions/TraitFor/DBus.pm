@@ -1,9 +1,9 @@
-# @(#)Ident: DBus.pm 2013-07-10 22:44 pjf ;
+# @(#)Ident: DBus.pm 2013-11-23 13:06 pjf ;
 
 package Yakuake::Sessions::TraitFor::DBus;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( trim zip );
@@ -45,8 +45,7 @@ sub apply_sessions {
       my $tty_num  = $self->_get_tty_num( $ksess_id );
       my $title    = $tty_num.SPC.$tab->{title};
 
-      $self->debug and $self->log->debug
-         ( "Applying ${tab_no} ${sess_id} ${ksess_id} ${title}" );
+      $self->log->debug( "Applying ${tab_no} ${sess_id} ${ksess_id} ${title}" );
 
       $self->set_tab_title_for_session( $title, $sess_id );
       $tab->{cwd   } and $self->sessions->runCommand( 'cd '.$tab->{cwd} );
@@ -118,7 +117,7 @@ sub _get_current_directory {
 sub _get_executing_command {
    my ($self, $pid, $fgpid) = @_; $pid == $fgpid and return NUL;
 
-   my $cmd = [ qw(ps --format command --no-headers --pid), $fgpid ];
+   my $cmd = [ qw( ps --format command --no-headers --pid ), $fgpid ];
 
    $cmd = trim $self->run_cmd( $cmd, { debug => $self->debug } )->stdout;
 
@@ -209,7 +208,7 @@ Yakuake::Sessions::TraitFor::DBus - Interface with DBus
 
 =head1 Version
 
-This documents version v0.10.$Rev: 1 $ of L<Yakuake::Sessions::TraitFor::DBus>
+This documents version v0.11.$Rev: 1 $ of L<Yakuake::Sessions::TraitFor::DBus>
 
 =head1 Description
 

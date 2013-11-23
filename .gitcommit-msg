@@ -1,11 +1,11 @@
 #!/usr/bin/env perl
-# @(#)$Ident: gitcommit-msg 2013-06-08 17:20 pjf ;
 
+use 5.01;
 use strict;
 use warnings;
-use version; our $VERSION = qv( '0.2' );
+use version; our $VERSION = qv( '0.3' );
 
-use English qw(-no_match_vars);
+use English qw( -no_match_vars );
 
 my $message_file = $ARGV[ 0 ]; my $change_file = 'Changes';
 
@@ -19,7 +19,7 @@ if (-f $change_file) {
       or die "File ${change_file} cannot open: ${OS_ERROR}";
 
    my $changes = do { local $RS = undef; <$in> }; close $in;
-   my ($ver)   = $changes =~ m{ ^ (v?[0-9._]+) }mx; $ver ||= '0.1.1';
+   my ($ver)   = $changes =~ m{ ^ v? ([0-9]+[.][0-9]+) }mx; $ver ||= '0.1';
    my ($entry) = $changes =~ m{ [\n][\n] (.*?) [\n][\n] }msx;
 
    $entry =  join q( ), map    { s{ \A [ \t]+ }{}mx; $_ }
