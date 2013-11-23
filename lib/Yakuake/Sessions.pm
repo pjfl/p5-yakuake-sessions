@@ -1,24 +1,23 @@
-# @(#)Ident: Sessions.pm 2013-08-07 00:33 pjf ;
+# @(#)Ident: Sessions.pm 2013-11-22 18:58 pjf ;
 
 package Yakuake::Sessions;
 
 use 5.010001;
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 3 $ =~ /\d+/gmx );
 
-use Class::Usul::Constants;
 use Moo;
+use Class::Usul::Constants;
 
 extends q(Yakuake::Sessions::Base);
 with    q(Yakuake::Sessions::TraitFor::DBus);
 with    q(Yakuake::Sessions::TraitFor::TabTitles);
 with    q(Yakuake::Sessions::TraitFor::FileData);
 with    q(Yakuake::Sessions::TraitFor::Management);
-with    q(Class::Usul::TraitFor::UntaintedGetopts);
 
 # Construction
 around 'run' => sub {
-   my ($next, $self) = @_; $self->quiet( TRUE ); return $self->$next();
+   my ($orig, $self) = @_; $self->quiet( TRUE ); return $orig->( $self );
 };
 
 1;
@@ -35,7 +34,7 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 =head1 Version
 
-This documents version v0.10.$Rev: 1 $ of L<Yakuake::Sessions>
+This documents version v0.10.$Rev: 3 $ of L<Yakuake::Sessions>
 
 =head1 Synopsis
 

@@ -1,15 +1,15 @@
-# @(#)Ident: FileData.pm 2013-07-09 12:22 pjf ;
+# @(#)Ident: FileData.pm 2013-11-22 18:57 pjf ;
 
 package Yakuake::Sessions::TraitFor::FileData;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 3 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( throw );
 use File::DataClass::Types  qw( Bool );
 use Moo::Role;
-use MooX::Options;
+use Class::Usul::Options;
 
 requires qw( add_leader apply_sessions config debug debug_flag dumper file
              get_sessions_from_yakuake io loc options next_argv
@@ -93,7 +93,7 @@ Yakuake::Sessions::TraitFor::FileData - Dumps and loads session data
 
 =head1 Version
 
-This documents version v0.10.$Rev: 1 $ of
+This documents version v0.10.$Rev: 3 $ of
 L<Yakuake::Sessions::TraitFor::FileData>
 
 =head1 Description

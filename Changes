@@ -1,6 +1,8 @@
 Revision history for Yakuake::Sessions
 
-0.10.1    2013-08-21 14:23:04
+          - Dropped MooX::Options
+
+0.10.3    2013-11-23 01:12:23
           - Fixed metadata after switch to DZ
 
 0.9.1     2013-08-15 23:33:26

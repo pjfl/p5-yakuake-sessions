@@ -1,16 +1,16 @@
-# @(#)Ident: TabTitles.pm 2013-07-06 20:31 pjf ;
+# @(#)Ident: TabTitles.pm 2013-11-22 18:58 pjf ;
 
 package Yakuake::Sessions::TraitFor::TabTitles;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 3 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( throw );
 use Cwd                     qw( getcwd );
 use File::DataClass::Types  qw( NonEmptySimpleStr );
 use Moo::Role;
-use MooX::Options;
+use Class::Usul::Options;
 
 requires qw( config config_dir loc next_argv set_tab_title_for_session );
 
@@ -57,7 +57,7 @@ Yakuake::Sessions::TraitFor::TabTitles - Displays the tab title text
 
 =head1 Version
 
-This documents version v0.10.$Rev: 1 $ of
+This documents version v0.10.$Rev: 3 $ of
 L<Yakuake::Sessions::TraitFor::TabTitles>
 
 =head1 Description

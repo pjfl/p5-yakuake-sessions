@@ -1,15 +1,15 @@
-# @(#)Ident: Base.pm 2013-07-06 14:27 pjf ;
+# @(#)Ident: Base.pm 2013-11-22 18:57 pjf ;
 
 package Yakuake::Sessions::Base;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 3 $ =~ /\d+/gmx );
 
+use Moo;
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( app_prefix throw trim );
+use Class::Usul::Options;
 use File::DataClass::Types  qw( Directory HashRef NonEmptySimpleStr Path );
-use Moo;
-use MooX::Options;
 use Scalar::Util            qw( blessed );
 
 extends q(Class::Usul::Programs);
@@ -96,7 +96,7 @@ Yakuake::Sessions::Base - Attributes and methods for Yakuake session management
 
 =head1 Version
 
-This documents version v0.10.$Rev: 1 $ of L<Yakuake::Sessions::Base>
+This documents version v0.10.$Rev: 3 $ of L<Yakuake::Sessions::Base>
 
 =head1 Description
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-# @(#)Ident: yakuake_session_tt_cd 2013-06-30 02:05 pjf ;
+# @(#)Ident: yakuake_session_tt_cd 2013-10-19 22:10 pjf ;
 # Called from the alias for the cd shell builtin
 # Since its called each time you cd it must be small and fast
 
@@ -32,6 +32,6 @@ pathcmp( $appd, getcwd ) < 0 or exit 0; unlink $path;
 require Yakuake::Sessions;
 
 exit Yakuake::Sessions->new_with_options
-   ( method => 'set_tab_title', nodebug => 1 )->run;
+   ( method => 'set_tab_title', noask => 1 )->run;
 
 __END__

@@ -1,15 +1,15 @@
-# @(#)Ident: Management.pm 2013-07-06 17:42 pjf ;
+# @(#)Ident: Management.pm 2013-11-22 22:43 pjf ;
 
 package Yakuake::Sessions::TraitFor::Management;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 3 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( emit throw );
 use File::DataClass::Types  qw( NonEmptySimpleStr );
 use Moo::Role;
-use MooX::Options;
+use Class::Usul::Options;
 
 requires qw( dump dumper extra_argv file load loc
              profile_dir profile_path run_cmd );
@@ -51,6 +51,20 @@ sub list : method {
    return OK;
 }
 
+sub select : method {
+   my $self     = shift;
+   my @suffixes = keys %{ $self->file->dataclass_schema->extensions };
+   my @profiles = map { $_->basename( @suffixes ) }
+                      $self->profile_dir->all_files;
+   my @options  = map { ucfirst $_ } @profiles;
+   my $prompt   = 'Select a profile from the following list';
+   my $index    = $self->get_option( $prompt, undef, TRUE, undef, \@options );
+
+   $index < 0 and return FAILED;
+   $self->unshift_argv( $profiles[ $index ] ); $self->load;
+   return OK;
+}
+
 sub show : method {
    my $self = shift; $self->dumper( $self->load( TRUE ) ); return OK;
 }
@@ -76,7 +90,7 @@ Yakuake::Sessions::TraitFor::Management - CRUD methods for session profiles
 
 =head1 Version
 
-This documents version v0.10.$Rev: 1 $ of L<Yakuake::Sessions::TraitFor::Management>
+This documents version v0.10.$Rev: 3 $ of L<Yakuake::Sessions::TraitFor::Management>
 
 =head1 Description
 
@@ -121,6 +135,13 @@ Uses the C<editor> attribute to select the editor
    $exit_code = $self->list;
 
 List the session profiles stored in the C<profile_dir>
+
+=head2 select - Select the profile to load from a list
+
+   $exit_code = $self->select;
+
+Displays a list of the available profiles and loads the one that
+is selected
 
 =head2 show - Display the contents of a session profile
 
