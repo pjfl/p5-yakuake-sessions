@@ -4,7 +4,7 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 # Version
 
-This documents version v0.11.$Rev: 0 $ of [Yakuake::Sessions](https://metacpan.org/module/Yakuake::Sessions)
+This documents version v0.11.$Rev: 2 $ of [Yakuake::Sessions](https://metacpan.org/pod/Yakuake::Sessions)
 
 # Synopsis
 
@@ -39,7 +39,7 @@ and manages the tab title text
 
 # Configuration and Environment
 
-Reads configuration from `~/.yakuakue\_sessions/yakuake\_session.json` which
+Reads configuration from `~/.yakuakue_sessions/yakuake_session.json` which
 might look like;
 
     {
@@ -47,7 +47,7 @@ might look like;
        "tab_title": "Oo.!.oO"
     }
 
-See the [config class](https://metacpan.org/module/Yakuake::Sessions::Config) for the full list of
+See the [config class](https://metacpan.org/pod/Yakuake::Sessions::Config) for the full list of
 configuration attributes
 
 Defines the following list of attributes which can be set from the command
@@ -56,7 +56,7 @@ line;
 - `config_dir`
 
     Directory containing the configuration files. Defaults to
-    `~/.yakuake\_sessions`
+    `~/.yakuake_sessions`
 
 - `editor`
 
@@ -87,7 +87,7 @@ Modifies these methods in the base class
 
     yakuake_session create <profile_name>
 
-Creates a new session profile in the `profile\_dir`. Calls ["dump"](#dump)
+Creates a new session profile in the `profile_dir`. Calls ["dump"](#dump)
 
 ## delete
 
@@ -113,7 +113,7 @@ Edit a session profile
 
     yakuake_session list
 
-List the session profiles stored in the `profile\_dir`
+List the session profiles stored in the `profile_dir`
 
 ## load
 
@@ -121,6 +121,12 @@ List the session profiles stored in the `profile\_dir`
 
 Load the specified profile, recreating the tabs with their title text,
 current working directories and executing commands
+
+## select
+
+    yakuakge_session select
+
+Select the profile to load from the displayed list
 
 ## set\_tab\_title
 
@@ -153,9 +159,9 @@ their abstracts
 
 # Dependencies
 
-- [Class::Usul](https://metacpan.org/module/Class::Usul)
-- [File::DataClass](https://metacpan.org/module/File::DataClass)
-- [Net::DBus](https://metacpan.org/module/Net::DBus)
+- [Class::Usul](https://metacpan.org/pod/Class::Usul)
+- [File::DataClass](https://metacpan.org/pod/File::DataClass)
+- [Net::DBus](https://metacpan.org/pod/Net::DBus)
 
 # Incompatibilities
 
@@ -184,7 +190,7 @@ Peter Flanigan, `<pjfl@cpan.org>`
 Copyright (c) 2013 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself. See [perlartistic](https://metacpan.org/module/perlartistic)
+under the same terms as Perl itself. See [perlartistic](https://metacpan.org/pod/perlartistic)
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT WARRANTY; without even the implied warranty of
