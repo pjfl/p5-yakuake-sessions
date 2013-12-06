@@ -1,4 +1,4 @@
-# @(#)$Ident: DZ_Build.PL 2013-09-03 12:35 pjf ;
+# @(#)$Ident: Build.PL 2013-12-06 14:50 pjf ;
 
 use strict;
 use warnings;
@@ -13,7 +13,7 @@ my $name     = '##{ $zilla->name ##}'; $name =~ s{ - }{::}gmx;
 $] >= $perl_ver or $ENV{PERL5_CPANPLUS_IS_VERSION}
    or whimper "Minimum required Perl version is ${perl_ver}";
 
-Module::Build->subclass( code => do { local $/; <DATA> } )->new(
+Module::Build->new(
   'module_name' => $name,
   'notes'       => { min_perl_version => $perl_ver },
 ##{ $plugin->get_prereqs( 1 ) ##}
@@ -21,9 +21,3 @@ Module::Build->subclass( code => do { local $/; <DATA> } )->new(
 )->create_build_script;
 
 exit 0;
-
-__DATA__
-
-sub _normalize_prereqs { # Dynamic config
-   my $self = shift; my $p = $self->SUPER::_normalize_prereqs; return $p;
-}

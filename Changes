@@ -1,5 +1,6 @@
 Revision history for Yakuake::Sessions
 
+          - Updated Build.PL. Removed MetaDynamicConfig from dist.ini
           - Using DZ::P::AbstractFromPOD and LicenseFromModule
           - Dropped DZ::P::MarkdownInRoot from dist.ini
           - Added select option
