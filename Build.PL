@@ -1,4 +1,4 @@
-# @(#)$Ident: Build.PL 2013-12-06 14:50 pjf ;
+# @(#)$Ident: Build.PL 2013-12-14 14:26 pjf ;
 
 use strict;
 use warnings;
@@ -9,14 +9,24 @@ sub whimper { print {*STDOUT} $_[ 0 ]."\n"; exit 0 }
 
 my $perl_ver = ##{ $meta2{prereqs}->{runtime}->{requires}->{perl} ##};
 my $name     = '##{ $zilla->name ##}'; $name =~ s{ - }{::}gmx;
+my $prereqs  = {
+##{ $plugin->get_prereqs( 1 ) ##}
+};
 
-$] >= $perl_ver or $ENV{PERL5_CPANPLUS_IS_VERSION}
-   or whimper "Minimum required Perl version is ${perl_ver}";
+if ($] < $perl_ver) {
+   $ENV{AUTOMATED_TESTING}
+      or $ENV{PERL_CPAN_REPORTER_CONFIG}
+      or $ENV{PERL5_CPANPLUS_IS_VERSION}
+      or whimper "Minimum required Perl version is ${perl_ver}";
+   $prereqs->{build_requires} = { %{ $prereqs->{configure_requires} } };
+   $prereqs->{build_requires}->{ 'Test::Requires' } = 0.06;
+   delete $prereqs->{requires};
+}
 
 Module::Build->new(
   'module_name' => $name,
   'notes'       => { min_perl_version => $perl_ver },
-##{ $plugin->get_prereqs( 1 ) ##}
+  %{ $prereqs },
 ##{ $plugin->get_default('share_dir') ##}
 )->create_build_script;
 
