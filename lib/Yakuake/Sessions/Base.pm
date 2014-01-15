@@ -1,21 +1,24 @@
-# @(#)Ident: Base.pm 2013-11-22 18:57 pjf ;
+# @(#)Ident: Base.pm 2014-01-12 21:57 pjf ;
 
 package Yakuake::Sessions::Base;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version;    our $VERSION = qv( sprintf '0.12.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Moo;
 use Class::Usul::Constants;
-use Class::Usul::Functions  qw( app_prefix throw trim );
+use Class::Usul::Functions     qw( app_prefix io throw trim );
 use Class::Usul::Options;
-use File::DataClass::Types  qw( Directory HashRef NonEmptySimpleStr Path );
-use Scalar::Util            qw( blessed );
+use File::DataClass::Functions qw( map_extension2class supported_extensions );
+use File::DataClass::Types     qw( ArrayRef Directory HashRef
+                                   NonEmptySimpleStr Path );
+use Scalar::Util               qw( blessed );
+use Unexpected::Functions      qw( Unspecified );
 
 extends q(Class::Usul::Programs);
 
 # Override defaults in base class
-has '+config_class' => default => sub { 'Yakuake::Sessions::Config' };
+has '+config_class'    => default => sub { 'Yakuake::Sessions::Config' };
 
 # Public attributes
 option 'config_dir'    => is => 'lazy', isa => Directory,
@@ -31,37 +34,30 @@ option 'storage_class' => is => 'ro',   isa => NonEmptySimpleStr,
    default             => sub { $_[ 0 ]->config->storage_class },
    short               => 's';
 
-has 'extensions'   => is => 'lazy', isa => HashRef, init_arg => undef;
+has 'extensions'       => is => 'lazy', isa => ArrayRef,
+   builder             => sub { [ supported_extensions() ] },
+   init_arg            => undef;
 
-has 'profile_path' => is => 'lazy', isa => Path, coerce => Path->coercion,
-   init_arg        => undef;
+has 'profile_path'     => is => 'lazy', isa => Path, coerce => Path->coercion,
+   init_arg            => undef;
+
+has 'storage_map'      => is => 'lazy', isa => HashRef, init_arg => undef;
 
 # Private methods
 sub _build_config_dir {
    my $self = shift;
    my $home = $self->config->my_home;
-   my $dir  = $self->io( [ $home, '.'.(app_prefix blessed $self) ] );
+   my $dir  = io [ $home, '.'.(app_prefix blessed $self) ];
 
-   $dir->exists or $dir->mkpath; return $dir;
-}
-
-sub _build_extensions {
-   my $self        = shift;
-   my $assoc_table = $self->file->dataclass_schema->extensions;
-   my $reverse     = {};
-
-   for my $extn (keys %{ $assoc_table }) {
-      $reverse->{ $_ } = $extn for (@{ $assoc_table->{ $extn } });
-   }
-
-   return $reverse;
+   $dir->exists or $dir->mkpath;
+   return $dir;
 }
 
 sub _build_profile_path {
    my $self    = shift;
    my $profile = $self->next_argv
-      or throw $self->loc( 'Profile name not specified' );
-   my $path    = $self->io( $profile ); $path->exists and return $path;
+      or throw class => Unspecified, args => [ 'profile name' ];
+   my $path    = io $profile; $path->exists and return $path;
    my $profdir = $self->profile_dir; $path = $profdir->catfile( $profile );
 
    $path->exists and return $path;
@@ -69,9 +65,19 @@ sub _build_profile_path {
    $profdir->filter( sub { $_->filename =~ m{ \A $profile }mx } );
    $path = ($profdir->all_files)[ 0 ]; defined $path and return $path;
 
-   my $extn    = $self->extensions->{ $self->storage_class } || NUL;
+   my $extn    = $self->storage_map->{ $self->storage_class } || NUL;
 
    return $profdir->catfile( $profile.$extn );
+}
+
+sub _build_storage_map {
+   my $self = shift; my $map = {};
+
+   for my $extn (supported_extensions()) {
+      $map->{ map_extension2class( $extn )->[ 0 ] } = $extn;
+   }
+
+   return $map;
 }
 
 1;
@@ -96,7 +102,7 @@ Yakuake::Sessions::Base - Attributes and methods for Yakuake session management
 
 =head1 Version
 
-This documents version v0.11.$Rev: 1 $ of L<Yakuake::Sessions::Base>
+This documents version v0.12.$Rev: 1 $ of L<Yakuake::Sessions::Base>
 
 =head1 Description
 

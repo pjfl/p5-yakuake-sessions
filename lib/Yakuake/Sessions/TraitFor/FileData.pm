@@ -1,18 +1,18 @@
-# @(#)Ident: FileData.pm 2013-11-23 23:06 pjf ;
+# @(#)Ident: FileData.pm 2014-01-15 01:29 pjf ;
 
 package Yakuake::Sessions::TraitFor::FileData;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 2 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
-use Class::Usul::Functions  qw( throw );
+use Class::Usul::Functions  qw( io throw );
 use File::DataClass::Types  qw( Bool );
 use Moo::Role;
 use Class::Usul::Options;
 
 requires qw( add_leader apply_sessions config debug debug_flag dumper file
-             get_sessions_from_yakuake io loc options next_argv
+             get_sessions_from_yakuake loc options next_argv
              profile_path run_cmd storage_class yorn );
 
 # Public attributes
@@ -27,7 +27,7 @@ sub dump : method {
    my $session_tabs = $self->get_sessions_from_yakuake;
 
    ($self->debug or not $path) and $self->dumper( $session_tabs );
-   $path or return OK; $path = $self->io( $path );
+   $path or return OK; $path = io $path;
 
    my $prompt; $path->exists and $path->is_file and not $self->force
       and $prompt = $self->loc( 'Specified file exists, overwrite?' )
@@ -44,7 +44,8 @@ sub load : method {
    my ($self, $data_only) = @_; my $path = $self->profile_path;
 
    $path->exists and $path->is_file
-      or throw $self->loc( 'Path [_1] does not exist or is not a file', $path );
+      or throw error => 'Path [_1] does not exist or is not a file',
+               args  => [ $path ];
 
    $data_only and return $self->_get_sessions_from_file;
 
@@ -67,7 +68,7 @@ sub _get_sessions_from_file {
    my $tabs = $self->file->data_load
       ( paths => [ $path ], storage_class => $self->storage_class )->{sessions};
 
-   $tabs->[ 0 ] or throw $self->loc( 'No session tabs info found' );
+   $tabs->[ 0 ] or throw 'No session tabs info found';
 
    return $tabs;
 }
@@ -93,7 +94,7 @@ Yakuake::Sessions::TraitFor::FileData - Dumps and loads session data
 
 =head1 Version
 
-This documents version v0.11.$Rev: 2 $ of
+This documents version v0.12.$Rev: 1 $ of
 L<Yakuake::Sessions::TraitFor::FileData>
 
 =head1 Description

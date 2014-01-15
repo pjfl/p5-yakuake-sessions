@@ -1,13 +1,14 @@
-# @(#)Ident: Management.pm 2013-11-22 22:43 pjf ;
+# @(#)Ident: Management.pm 2014-01-15 16:30 pjf ;
 
 package Yakuake::Sessions::TraitFor::Management;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( emit throw );
 use File::DataClass::Types  qw( NonEmptySimpleStr );
+use Unexpected::Functions   qw( PathNotFound );
 use Moo::Role;
 use Class::Usul::Options;
 
@@ -31,7 +32,7 @@ sub create : method {
 sub delete : method {
    my $self = shift; my $path = $self->profile_path;
 
-   $path->exists or throw $self->loc( 'Path [_1] not found', $path );
+   $path->exists or throw class => PathNotFound, args => [ $path ];
    $path->unlink;
    return OK;
 }
@@ -44,8 +45,7 @@ sub edit : method {
 }
 
 sub list : method {
-   my $self     = shift;
-   my @suffixes = keys %{ $self->file->dataclass_schema->extensions };
+   my $self = shift; my @suffixes = @{ $self->extensions };
 
    emit map { $_->basename( @suffixes ) } $self->profile_dir->all_files;
    return OK;
@@ -53,8 +53,7 @@ sub list : method {
 
 sub select : method {
    my $self     = shift;
-   my @suffixes = keys %{ $self->file->dataclass_schema->extensions };
-   my @profiles = map { $_->basename( @suffixes ) }
+   my @profiles = map { $_->basename( @{ $self->extensions } ) }
                       $self->profile_dir->all_files;
    my @options  = map { ucfirst $_ } @profiles;
    my $prompt   = 'Select a profile from the following list';
@@ -90,7 +89,7 @@ Yakuake::Sessions::TraitFor::Management - CRUD methods for session profiles
 
 =head1 Version
 
-This documents version v0.11.$Rev: 1 $ of L<Yakuake::Sessions::TraitFor::Management>
+This documents version v0.12.$Rev: 1 $ of L<Yakuake::Sessions::TraitFor::Management>
 
 =head1 Description
 

@@ -3,7 +3,7 @@
 package Yakuake::Sessions::Config;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Moo;
 use Class::Usul::Functions  qw( untaint_identifier );
@@ -44,7 +44,7 @@ Yakuake::Sessions::Config - Attribute initialization from configuration file
 
 =head1 Version
 
-This documents version v0.11.$Rev: 1 $ of L<Yakuake::Sessions::Config>
+This documents version v0.12.$Rev: 1 $ of L<Yakuake::Sessions::Config>
 
 =head1 Description
 
