@@ -4,7 +4,7 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 # Version
 
-This documents version v0.13.$Rev: 0 $ of [Yakuake::Sessions](https://metacpan.org/pod/Yakuake::Sessions)
+This documents version v0.13.$Rev: 1 $ of [Yakuake::Sessions](https://metacpan.org/pod/Yakuake::Sessions)
 
 # Synopsis
 
