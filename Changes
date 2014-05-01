@@ -1,5 +1,7 @@
 Revision history for Yakuake::Sessions
 
+          - Removed Ident and VERSIONs
+
 0.12.1    2014-01-15 17:57:29
           - Now using exception classes
           - Updated Build.PL

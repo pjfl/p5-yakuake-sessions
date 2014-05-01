@@ -1,9 +1,6 @@
-# @(#)Ident: DBus.pm 2013-11-23 13:06 pjf ;
-
 package Yakuake::Sessions::TraitFor::DBus;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( trim zip );
@@ -61,11 +58,11 @@ sub apply_sessions {
 sub get_sessions_from_yakuake {
    my $self        =  shift;
    my $session_map =  $self->_get_session_map;
-   my $num_sesses  =  (scalar keys %{ $session_map }) - 1;
+   my $num_sesses  =  scalar keys %{ $session_map };
    my $active_sess =  $self->_get_active_session_id;
    my $tabs        =  [];
 
-   for my $tab_no (0 .. $num_sesses) {
+   for my $tab_no (0 .. $num_sesses - 1) {
       my $sess_id  =  $self->_get_session_at_tab( $tab_no );
       my $ksess_id =  $session_map->{ $sess_id }; defined $ksess_id or next;
       my $fgpid    =  $self->_get_session_fg_process_id( $ksess_id );
@@ -107,7 +104,7 @@ sub _get_active_session_id {
 }
 
 sub _get_current_directory {
-   my ($self, $pid) = @_; my $cmd = [ qw(pwdx), $pid ];
+   my ($self, $pid) = @_; my $cmd = [ 'pwdx', $pid ];
 
    my $out = $self->run_cmd( $cmd, { debug => $self->debug } )->stdout;
 
@@ -206,10 +203,6 @@ Yakuake::Sessions::TraitFor::DBus - Interface with DBus
    extends 'Yakuake::Sessions::Base';
    with    'Yakuake::Sessions::TraitFor::DBus';
 
-=head1 Version
-
-This documents version v0.12.$Rev: 1 $ of L<Yakuake::Sessions::TraitFor::DBus>
-
 =head1 Description
 
 Abstract away the mechanics of communicating with Yakuake via DBus
@@ -295,7 +288,7 @@ Peter Flanigan, C<< <pjfl@cpan.org> >>
 
 =head1 License and Copyright
 
-Copyright (c) 2013 Peter Flanigan. All rights reserved
+Copyright (c) 2014 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>

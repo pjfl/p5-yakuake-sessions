@@ -1,9 +1,6 @@
-# @(#)Ident: TabTitles.pm 2014-01-15 01:26 pjf ;
-
 package Yakuake::Sessions::TraitFor::TabTitles;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( throw );
@@ -56,11 +53,6 @@ Yakuake::Sessions::TraitFor::TabTitles - Displays the tab title text
 
    extends 'Yakuake::Sessions::Base';
    with    'Yakuake::Sessions::TraitFor::TabTitles';
-
-=head1 Version
-
-This documents version v0.12.$Rev: 1 $ of
-L<Yakuake::Sessions::TraitFor::TabTitles>
 
 =head1 Description
 
@@ -125,7 +117,7 @@ Peter Flanigan, C<< <pjfl@cpan.org> >>
 
 =head1 License and Copyright
 
-Copyright (c) 2013 Peter Flanigan. All rights reserved
+Copyright (c) 2014 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>

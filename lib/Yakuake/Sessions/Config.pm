@@ -1,9 +1,6 @@
-# @(#)Ident: Config.pm 2013-11-22 22:53 pjf ;
-
 package Yakuake::Sessions::Config;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Moo;
 use Class::Usul::Functions  qw( untaint_identifier );
@@ -41,10 +38,6 @@ Yakuake::Sessions::Config - Attribute initialization from configuration file
    extends q(Class::Usul::Programs);
 
    has '+config_class' => default => sub { 'Yakuake::Sessions::Config' };
-
-=head1 Version
-
-This documents version v0.12.$Rev: 1 $ of L<Yakuake::Sessions::Config>
 
 =head1 Description
 
@@ -116,7 +109,7 @@ Peter Flanigan, C<< <pjfl@cpan.org> >>
 
 =head1 License and Copyright
 
-Copyright (c) 2013 Peter Flanigan. All rights reserved
+Copyright (c) 2014 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>

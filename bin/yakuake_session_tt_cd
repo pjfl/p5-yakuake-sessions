@@ -1,12 +1,11 @@
 #!/usr/bin/env perl
-# @(#)Ident: yakuake_session_tt_cd 2013-10-19 22:10 pjf ;
 # Called from the alias for the cd shell builtin
 # Since its called each time you cd it must be small and fast
 
 use strict;
 use warnings;
 
-our $VERSION = '0.6';
+our $VERSION = '0.12';
 
 use Cwd                   qw( getcwd );
 use File::Spec::Functions qw( catdir catfile );

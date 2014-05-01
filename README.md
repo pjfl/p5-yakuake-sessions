@@ -4,7 +4,7 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 # Version
 
-This documents version v0.11.$Rev: 2 $ of [Yakuake::Sessions](https://metacpan.org/pod/Yakuake::Sessions)
+This documents version v0.12.$Rev: 1 $ of [Yakuake::Sessions](https://metacpan.org/pod/Yakuake::Sessions)
 
 # Synopsis
 
@@ -187,7 +187,7 @@ Peter Flanigan, `<pjfl@cpan.org>`
 
 # License and Copyright
 
-Copyright (c) 2013 Peter Flanigan. All rights reserved
+Copyright (c) 2014 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See [perlartistic](https://metacpan.org/pod/perlartistic)

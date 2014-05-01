@@ -3,7 +3,7 @@
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 2 $ =~ /\d+/gmx );
 
 use Yakuake::Sessions;
 
@@ -39,7 +39,7 @@ Lists the methods available in this program
 
 =head1 VERSION
 
-This documents version v0.12.$Rev: 1 $ of C<yakuake_session>
+This documents version v0.12.$Rev: 2 $ of C<yakuake_session>
 
 =head1 DESCRIPTION
 
@@ -139,7 +139,7 @@ Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2013 Peter Flanigan
+Copyright (c) 2014 Peter Flanigan
 
 This is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

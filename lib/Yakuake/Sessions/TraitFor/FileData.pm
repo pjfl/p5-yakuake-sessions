@@ -1,9 +1,6 @@
-# @(#)Ident: FileData.pm 2014-01-15 01:29 pjf ;
-
 package Yakuake::Sessions::TraitFor::FileData;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( io throw );
@@ -92,11 +89,6 @@ Yakuake::Sessions::TraitFor::FileData - Dumps and loads session data
    extends 'Yakuake::Sessions::Base';
    with    'Yakuake::Sessions::TraitFor::FileData';
 
-=head1 Version
-
-This documents version v0.12.$Rev: 1 $ of
-L<Yakuake::Sessions::TraitFor::FileData>
-
 =head1 Description
 
 This is a L<Moo::Role> which dumps and loads session data
@@ -166,7 +158,7 @@ Peter Flanigan, C<< <pjfl@cpan.org> >>
 
 =head1 License and Copyright
 
-Copyright (c) 2013 Peter Flanigan. All rights reserved
+Copyright (c) 2014 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>
