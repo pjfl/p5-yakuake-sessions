@@ -1,5 +1,3 @@
-# @(#)Ident: 01always_pass.t 2013-08-13 15:07 pjf ;
-
 use strict;
 use warnings;
 

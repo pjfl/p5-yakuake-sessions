@@ -1,11 +1,8 @@
-# @(#)Ident: 10test_script.t 2013-12-13 14:08 pjf ;
-
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 1 $ =~ /\d+/gmx );
-use File::Spec::Functions   qw( catdir updir );
-use FindBin                 qw( $Bin );
-use lib                 catdir( $Bin, updir, 'lib' );
+use File::Spec::Functions qw( catdir updir );
+use FindBin               qw( $Bin );
+use lib               catdir( $Bin, updir, 'lib' );
 
 use Test::More;
 use Test::Requires { version => 0.88 };

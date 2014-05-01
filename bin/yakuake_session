@@ -1,9 +1,7 @@
 #!/usr/bin/env perl
-# @(#)Ident: yakuake_session 2013-08-15 22:30 pjf ;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 2 $ =~ /\d+/gmx );
 
 use Yakuake::Sessions;
 
@@ -39,7 +37,7 @@ Lists the methods available in this program
 
 =head1 VERSION
 
-This documents version v0.12.$Rev: 2 $ of C<yakuake_session>
+This documents version v0.13.$Rev: 1 $ of C<yakuake_session>
 
 =head1 DESCRIPTION
 

@@ -1,19 +1,17 @@
-# @(#)Ident: 07podspelling.t 2013-04-22 22:46 pjf ;
-
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 1 $ =~ /\d+/gmx );
-use File::Spec::Functions qw(catdir catfile updir);
-use FindBin qw( $Bin );
-use lib catdir( $Bin, updir, q(lib) );
+use File::Spec::Functions qw( catdir catfile updir );
+use FindBin               qw( $Bin );
+use lib               catdir( $Bin, updir, 'lib' );
 
-use English qw(-no_match_vars);
 use Test::More;
 
 BEGIN {
    $ENV{AUTHOR_TESTING}
       or plan skip_all => 'POD spelling test only for developers';
 }
+
+use English qw( -no_match_vars );
 
 eval "use Test::Spelling";
 
