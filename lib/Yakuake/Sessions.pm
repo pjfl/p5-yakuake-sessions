@@ -2,7 +2,7 @@ package Yakuake::Sessions;
 
 use 5.010001;
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 2 $ =~ /\d+/gmx );
 
 use Moo;
 use Class::Usul::Constants;
@@ -32,7 +32,13 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 =head1 Version
 
-This documents version v0.13.$Rev: 1 $ of L<Yakuake::Sessions>
+This documents version v0.13.$Rev: 2 $ of L<Yakuake::Sessions>
+
+=begin markdown
+
+[![CPAN version](https://badge.fury.io/pl/Yakuake-Sessions.svg)](http://badge.fury.io/pl/Yakuake-Sessions)
+
+=end markdown
 
 =head1 Synopsis
 

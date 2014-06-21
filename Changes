@@ -1,5 +1,7 @@
 Revision history for Yakuake::Sessions
 
+          - Added fury badge
+
 0.13.1    2014-05-01 13:55:12
           - Bumped version to release
           - Removed Ident and VERSIONs
