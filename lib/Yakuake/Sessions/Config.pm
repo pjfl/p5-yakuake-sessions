@@ -1,6 +1,6 @@
 package Yakuake::Sessions::Config;
 
-use namespace::sweep;
+use namespace::autoclean;
 
 use Moo;
 use Class::Usul::Functions  qw( untaint_identifier );

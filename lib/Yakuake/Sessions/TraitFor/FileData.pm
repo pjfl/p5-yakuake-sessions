@@ -1,10 +1,10 @@
 package Yakuake::Sessions::TraitFor::FileData;
 
-use namespace::sweep;
+use namespace::autoclean;
 
-use Class::Usul::Constants;
-use Class::Usul::Functions  qw( io throw );
-use File::DataClass::Types  qw( Bool );
+use Class::Usul::Constants qw( EXCEPTION_CLASS FALSE OK SPC TRUE );
+use Class::Usul::Functions qw( io throw );
+use File::DataClass::Types qw( Bool );
 use Moo::Role;
 use Class::Usul::Options;
 

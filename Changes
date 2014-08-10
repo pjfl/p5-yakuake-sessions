@@ -1,5 +1,7 @@
 Revision history for Yakuake::Sessions
 
+          - Replaced namespace::sweep with autoclean
+          - Fixed TCs in TraitFor::DBus
           - Added fury badge
 
 0.13.1    2014-05-01 13:55:12

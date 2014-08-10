@@ -1,9 +1,9 @@
 package Yakuake::Sessions::Base;
 
-use namespace::sweep;
+use namespace::autoclean;
 
 use Moo;
-use Class::Usul::Constants;
+use Class::Usul::Constants     qw( EXCEPTION_CLASS NUL );
 use Class::Usul::Functions     qw( app_prefix io throw trim );
 use Class::Usul::Options;
 use File::DataClass::Functions qw( map_extension2class supported_extensions );

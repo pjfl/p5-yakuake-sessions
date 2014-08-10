@@ -1,12 +1,12 @@
 package Yakuake::Sessions::TraitFor::TabTitles;
 
-use namespace::sweep;
+use namespace::autoclean;
 
-use Class::Usul::Constants;
-use Class::Usul::Functions  qw( throw );
-use Cwd                     qw( getcwd );
-use File::DataClass::Types  qw( NonEmptySimpleStr );
-use Unexpected::Functions   qw( Unspecified );
+use Class::Usul::Constants qw( EXCEPTION_CLASS OK );
+use Class::Usul::Functions qw( throw );
+use Cwd                    qw( getcwd );
+use File::DataClass::Types qw( NonEmptySimpleStr );
+use Unexpected::Functions  qw( Unspecified );
 use Moo::Role;
 use Class::Usul::Options;
 

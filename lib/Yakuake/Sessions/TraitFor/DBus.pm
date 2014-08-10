@@ -1,11 +1,13 @@
 package Yakuake::Sessions::TraitFor::DBus;
 
-use namespace::sweep;
+# TODO: Rewrite this async. Use Net::DBus::Reactor
 
-use Class::Usul::Constants;
-use Class::Usul::Functions  qw( trim zip );
+use namespace::autoclean;
+
+use Class::Usul::Constants  qw( EXCEPTION_CLASS NUL SPC );
+use Class::Usul::Functions  qw( throw trim zip );
 use Class::Usul::Time       qw( nap );
-use Class::Usul::Types      qw( LoadableClass );
+use Class::Usul::Types      qw( LoadableClass Object );
 use English                 qw( -no_match_vars );
 use Moo::Role;
 
@@ -14,20 +16,24 @@ requires qw( debug run_cmd );
 # Public attribuetes
 has 'dbus_class' => is => 'lazy', isa => LoadableClass, default => 'Net::DBus';
 
-has 'service'    => is => 'lazy', isa => sub { $_[ 0 ]->can( 'get_service' ) },
+has 'service'    => is => 'lazy',
+   isa           => sub { $_[ 0 ]->can( 'get_object' )
+                             or throw 'Attribute "service" cannot get_object' },
    default       => sub { $_[ 0 ]->dbus->get_service( 'org.kde.yakuake' ) },
    init_arg      => undef;
 
-has 'sessions'   => is => 'lazy', isa => sub { $_[ 0 ]->can( 'get_object' ) },
+has 'sessions'   => is => 'lazy', isa => Object,
    default       => sub { $_[ 0 ]->service->get_object( '/yakuake/sessions' ) },
    init_arg      => undef;
 
-has 'tabs'       => is => 'lazy', isa => sub { $_[ 0 ]->can( 'get_object' ) },
+has 'tabs'       => is => 'lazy', isa => Object,
    default       => sub { $_[ 0 ]->service->get_object( '/yakuake/tabs' ) },
    init_arg      => undef;
 
 # Private attributes
-has '_dbus'      => is => 'lazy', isa => sub { $_[ 0 ]->can( 'session' ) },
+has '_dbus'      => is => 'lazy',
+   isa           => sub { $_[ 0 ]->can( 'get_service' )
+                             or throw 'Attribute "dbus" cannot get_service' },
    default       => sub { $_[ 0 ]->dbus_class->session }, reader => 'dbus';
 
 # Public methods

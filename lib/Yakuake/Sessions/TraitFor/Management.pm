@@ -1,11 +1,11 @@
 package Yakuake::Sessions::TraitFor::Management;
 
-use namespace::sweep;
+use namespace::autoclean;
 
-use Class::Usul::Constants;
-use Class::Usul::Functions  qw( emit throw );
-use File::DataClass::Types  qw( NonEmptySimpleStr );
-use Unexpected::Functions   qw( PathNotFound );
+use Class::Usul::Constants qw( EXCEPTION_CLASS FAILED OK SPC TRUE );
+use Class::Usul::Functions qw( emit throw );
+use File::DataClass::Types qw( NonEmptySimpleStr );
+use Unexpected::Functions  qw( PathNotFound );
 use Moo::Role;
 use Class::Usul::Options;
 
