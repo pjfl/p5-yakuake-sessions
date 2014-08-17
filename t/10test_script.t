@@ -17,6 +17,7 @@ BEGIN {
 }
 
 use Test::Requires "${perl_ver}";
+use Test::Requires { 'Net::DBus' => '1.0.0' };
 
 use_ok 'Yakuake::Sessions';
 
