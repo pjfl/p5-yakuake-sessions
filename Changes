@@ -1,5 +1,7 @@
 Revision history for Yakuake::Sessions
 
+0.14.1    2014-08-17 17:32:58
+          - Made DBus calls syncronous
           - Replaced namespace::sweep with autoclean
           - Fixed TCs in TraitFor::DBus
           - Added fury badge

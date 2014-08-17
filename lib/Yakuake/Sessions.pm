@@ -2,7 +2,7 @@ package Yakuake::Sessions;
 
 use 5.010001;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 3 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.14.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Moo;
 use Class::Usul::Constants  qw( TRUE );
@@ -32,7 +32,7 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 =head1 Version
 
-This documents version v0.13.$Rev: 3 $ of L<Yakuake::Sessions>
+This documents version v0.14.$Rev: 1 $ of L<Yakuake::Sessions>
 
 =begin markdown
 

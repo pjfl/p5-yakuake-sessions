@@ -35,10 +35,6 @@ Lists the methods available in this program
 
 =back
 
-=head1 VERSION
-
-This documents version v0.13.$Rev: 1 $ of C<yakuake_session>
-
 =head1 DESCRIPTION
 
 Create, edit, load session profiles for the Yakuake Terminal Emulator
