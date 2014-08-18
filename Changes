@@ -1,5 +1,8 @@
 Revision history for Yakuake::Sessions
 
+          - Refactored session stabiliztion code
+          - Removed N::DB::Annotations calls are sync by default
+
 0.14.1    2014-08-17 17:32:58
           - Made DBus calls syncronous
           - Replaced namespace::sweep with autoclean

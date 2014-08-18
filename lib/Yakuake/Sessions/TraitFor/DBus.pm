@@ -7,7 +7,6 @@ use Class::Usul::Functions qw( throw trim zip );
 use Class::Usul::Time      qw( nap );
 use Class::Usul::Types     qw( LoadableClass Object );
 use English                qw( -no_match_vars );
-use Net::DBus::Annotation  qw( :call );
 use Moo::Role;
 
 requires qw( debug run_cmd );
@@ -50,15 +49,13 @@ sub apply_sessions {
       $self->log->debug( "Applying ${tab_no} ${sess_id} ${ksess_id} ${title}" );
 
       $self->set_tab_title_for_session( $title, $sess_id );
-      $tab->{cwd   } and $self->sessions->runCommand
-         ( dbus_call_sync, 'cd '.$tab->{cwd} );
-      $tab->{cmd   } and $self->sessions->runCommand
-         ( dbus_call_sync, $tab->{cmd} );
+      $tab->{cwd   } and $self->sessions->runCommand( 'cd '.$tab->{cwd} );
+      $tab->{cmd   } and $self->sessions->runCommand(       $tab->{cmd} );
       $tab->{active} and $active = $sess_id;
       $tab_no++;
    }
 
-   defined $active and $self->sessions->raiseSession( dbus_call_sync, $active );
+   defined $active and $self->sessions->raiseSession( $active );
    return;
 }
 
@@ -91,7 +88,7 @@ sub set_tab_title_for_session {
 
    $sess_id //= $self->_get_active_session_id;
 
-   return $self->tabs->setTabTitle( dbus_call_sync, $sess_id, $title );
+   return $self->tabs->setTabTitle( $sess_id, $title );
 }
 
 # Private methods
@@ -107,7 +104,7 @@ sub _close_session {
 }
 
 sub _get_active_session_id {
-   return int $_[ 0 ]->sessions->activeSessionId( dbus_call_sync );
+   return int $_[ 0 ]->sessions->activeSessionId;
 }
 
 sub _get_current_directory {
@@ -137,7 +134,7 @@ sub _get_ksession_ids {
 }
 
 sub _get_session_at_tab {
-   return int $_[ 0 ]->tabs->sessionAtTab( dbus_call_sync, $_[ 1 ] );
+   return int $_[ 0 ]->tabs->sessionAtTab( $_[ 1 ] );
 }
 
 sub _get_session_fg_process_id {
@@ -145,11 +142,9 @@ sub _get_session_fg_process_id {
 }
 
 sub _get_session_ids {
-   my $sessions = $_[ 0 ]->sessions;
-
    return ( sort   { $a <=> $b }
             map    { int $_ }
-            split m{ , }msx, $sessions->sessionIdList( dbus_call_sync ) );
+            split m{ , }msx, $_[ 0 ]->sessions->sessionIdList );
 }
 
 sub _get_session_map {
@@ -165,8 +160,7 @@ sub _get_session_process_id {
 }
 
 sub _get_tab_title {
-  (my $title = $_[ 0 ]->tabs->tabTitle( dbus_call_sync, $_[ 1 ] ) )
-     =~ s{ \A \d+ \s+ }{}mx;
+  (my $title = $_[ 0 ]->tabs->tabTitle( $_[ 1 ] ) ) =~ s{ \A \d+ \s+ }{}mx;
 
    return $title;
 }
@@ -185,9 +179,9 @@ sub _maybe_add_session {
 
    $tab_no > 0 or return $sess_id;
 
-   my $old_id = $sess_id; $self->sessions->addSession( dbus_call_sync );
+   my $old_id = $sess_id; $self->sessions->addSession;
 
-   while (not length $sess_id or $old_id == $sess_id) {
+   while (not length $sess_id or $sess_id <= $old_id) {
       nap $self->config->nap_time; $sess_id = $self->_get_active_session_id;
    }
 
