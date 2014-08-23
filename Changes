@@ -1,5 +1,6 @@
 Revision history for Yakuake::Sessions
 
+          - Fixed cmd line string options
           - Refactored session stabiliztion code
           - Removed N::DB::Annotations calls are sync by default
 

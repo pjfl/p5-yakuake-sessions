@@ -2,7 +2,7 @@ package Yakuake::Sessions;
 
 use 5.010001;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.14.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.14.%d', q$Rev: 2 $ =~ /\d+/gmx );
 
 use Moo;
 use Class::Usul::Constants  qw( TRUE );
@@ -14,8 +14,8 @@ with    q(Yakuake::Sessions::TraitFor::FileData);
 with    q(Yakuake::Sessions::TraitFor::Management);
 
 # Construction
-around 'run' => sub {
-   my ($orig, $self) = @_; $self->quiet( TRUE ); return $orig->( $self );
+before 'run' => sub {
+   $_[ 0 ]->quiet( TRUE ); return;
 };
 
 1;
@@ -32,7 +32,7 @@ Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 =head1 Version
 
-This documents version v0.14.$Rev: 1 $ of L<Yakuake::Sessions>
+This documents version v0.14.$Rev: 2 $ of L<Yakuake::Sessions>
 
 =begin markdown
 

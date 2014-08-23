@@ -15,7 +15,7 @@ requires qw( dump dumper extra_argv file load loc
 # Object attributes (public)
 option 'editor'  => is => 'lazy', isa => NonEmptySimpleStr,
    documentation => 'Which text editor to use',
-   default       => sub { $_[ 0 ]->config->editor };
+   default       => sub { $_[ 0 ]->config->editor }, format => 's';
 
 # Public methods
 sub create : method {

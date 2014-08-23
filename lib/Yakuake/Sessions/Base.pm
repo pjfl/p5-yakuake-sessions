@@ -20,15 +20,16 @@ has '+config_class'    => default => sub { 'Yakuake::Sessions::Config' };
 # Public attributes
 option 'config_dir'    => is => 'lazy', isa => Directory,
    documentation       => 'Directory to store configuration files',
-   coerce              => Directory->coercion;
+   coerce              => Directory->coercion, format => 's';
 
 option 'profile_dir'   => is => 'lazy', isa => Path, coerce => Path->coercion,
    documentation       => 'Directory to store the session profiles',
-   default             => sub { [ $_[ 0 ]->config_dir, 'profiles' ] };
+   default             => sub { [ $_[ 0 ]->config_dir, 'profiles' ] },
+   format              => 's';
 
 option 'storage_class' => is => 'ro',   isa => NonEmptySimpleStr,
    documentation       => 'File format used to store session data',
-   default             => sub { $_[ 0 ]->config->storage_class },
+   default             => sub { $_[ 0 ]->config->storage_class }, format => 's',
    short               => 's';
 
 has 'extensions'       => is => 'lazy', isa => ArrayRef,

@@ -46,6 +46,9 @@ sub apply_sessions {
       my $tty_num  = $self->_get_tty_num( $ksess_id );
       my $title    = $tty_num.SPC.$tab->{title};
 
+      # TODO: Log shows applying the right title even when result wrong
+      # Problem must come after this not before. Set tab title is on the
+      # tabs object, raise sessions is on the session object
       $self->log->debug( "Applying ${tab_no} ${sess_id} ${ksess_id} ${title}" );
 
       $self->set_tab_title_for_session( $title, $sess_id );
