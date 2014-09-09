@@ -2,11 +2,12 @@ package Yakuake::Sessions::TraitFor::DBus;
 
 use namespace::autoclean;
 
-use Class::Usul::Constants qw( EXCEPTION_CLASS NUL SPC );
+use Class::Usul::Constants qw( EXCEPTION_CLASS FALSE NUL SPC TRUE );
 use Class::Usul::Functions qw( throw trim zip );
 use Class::Usul::Time      qw( nap );
 use Class::Usul::Types     qw( LoadableClass Object );
 use English                qw( -no_match_vars );
+use Try::Tiny;
 use Moo::Role;
 
 requires qw( debug run_cmd );
@@ -36,9 +37,7 @@ has '_dbus'      => is => 'lazy',
 
 # Public methods
 sub apply_sessions {
-   my ($self, $session_tabs) = @_; my $active; my $tab_no = 0;
-
-   $self->_close_session( $_ ) for ($self->_get_ksession_ids);
+   my ($self, $session_tabs) = @_; my $active; my $tab_no = 0; $self->_close_sessions;
 
    for my $tab (@{ $session_tabs }) {
       my $sess_id  = $self->_maybe_add_session( $tab_no );
@@ -95,15 +94,30 @@ sub set_tab_title_for_session {
 }
 
 # Private methods
-sub _close_session {
-   my ($self, $ksess_id) = @_;
+sub _close_sessions {
+   my $self = shift; my $active_sess = $self->_get_active_session_id; my $borked = FALSE;
 
-   my $fgpid = $self->_get_session_fg_process_id( $ksess_id );
-   my $pid   = $self->_get_session_process_id( $ksess_id );
+   for my $sess_id  ($self->_get_session_ids) {
+      my $ksess_id = $self->_get_session_map->{ $sess_id };
+      my $fgpid    = $self->_get_session_fg_process_id( $ksess_id );
+      my $pid      = $self->_get_session_process_id( $ksess_id );
 
-   $pid != $fgpid and kill 'TERM', $fgpid;
+      $pid != $fgpid and kill 'TERM', $fgpid;
 
-   return $self->_get_session_object( $ksess_id )->close;
+      # Konsole removed the close method from the API - utterly useless bastards
+      unless ($borked) {
+         try   { $self->_get_session_object( $ksess_id )->close }
+         catch { $borked = TRUE };
+      }
+
+      if ($borked and $sess_id != $active_sess) {
+         $self->sessions->raiseSession( $sess_id );
+         $self->sessions->runCommand( 'exit' );
+         sleep 1;
+      }
+   }
+
+   return;
 }
 
 sub _get_active_session_id {

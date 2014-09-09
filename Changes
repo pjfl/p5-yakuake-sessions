@@ -1,5 +1,7 @@
 Revision history for Yakuake::Sessions
 
+          - Added a catch block and remdial action to retain functionality
+            Konsole removed the close method from the API - thanks
           - Fixed cmd line string options
           - Refactored session stabiliztion code
           - Removed N::DB::Annotations calls are sync by default
