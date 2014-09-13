@@ -37,7 +37,9 @@ has '_dbus'      => is => 'lazy',
 
 # Public methods
 sub apply_sessions {
-   my ($self, $session_tabs) = @_; my $active; my $tab_no = 0; $self->_close_sessions;
+   my ($self, $session_tabs) = @_; my $active; my $tab_no = 0;
+
+   $self->_close_sessions;
 
    for my $tab (@{ $session_tabs }) {
       my $sess_id  = $self->_maybe_add_session( $tab_no );
@@ -95,7 +97,9 @@ sub set_tab_title_for_session {
 
 # Private methods
 sub _close_sessions {
-   my $self = shift; my $active_sess = $self->_get_active_session_id; my $borked = FALSE;
+   my $self        = shift;
+   my $active_sess = $self->_get_active_session_id;
+   my $borked      = FALSE;
 
    for my $sess_id  ($self->_get_session_ids) {
       my $ksess_id = $self->_get_session_map->{ $sess_id };
@@ -104,7 +108,8 @@ sub _close_sessions {
 
       $pid != $fgpid and kill 'TERM', $fgpid;
 
-      # Konsole removed the close method from the API - utterly useless bastards
+      # Konsole removed the close method from the API after 4.4 before 4.8.4
+      # Utterly useless bastards
       unless ($borked) {
          try   { $self->_get_session_object( $ksess_id )->close }
          catch { $borked = TRUE };

@@ -79,7 +79,7 @@ Directory containing the configuration file
 
 =item B<-L        >
 
-Loads the specified language message catalog
+Loads the specified language message catalogue
 
 =item B<-n        >
 

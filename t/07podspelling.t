@@ -42,4 +42,6 @@ peter
 dbus
 embeded
 github
+konsole
+merchantability
 yakuake

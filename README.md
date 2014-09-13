@@ -1,12 +1,18 @@
+[![CPAN version](https://badge.fury.io/pl/Yakuake-Sessions.svg)](http://badge.fury.io/pl/Yakuake-Sessions)
+
+# WARNING
+
+Backwardly incompatible changes to the Konsole API between 4.4 and
+4.8.4 broke this application (https://bugs.kde.org/show\_bug.cgi?id=338914).
+A patch has been applied but it's gross
+
 # Name
 
 Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 # Version
 
-This documents version v0.14.$Rev: 1 $ of [Yakuake::Sessions](https://metacpan.org/pod/Yakuake::Sessions)
-
-[![CPAN version](https://badge.fury.io/pl/Yakuake-Sessions.svg)](http://badge.fury.io/pl/Yakuake-Sessions)
+This documents version v0.15.$Rev: 1 $ of [Yakuake::Sessions](https://metacpan.org/pod/Yakuake::Sessions)
 
 # Synopsis
 

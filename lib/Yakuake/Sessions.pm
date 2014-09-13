@@ -2,7 +2,7 @@ package Yakuake::Sessions;
 
 use 5.010001;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.14.%d', q$Rev: 2 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.15.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Moo;
 use Class::Usul::Constants  qw( TRUE );
@@ -26,19 +26,25 @@ __END__
 
 =encoding utf8
 
+=begin markdown
+
+[![CPAN version](https://badge.fury.io/pl/Yakuake-Sessions.svg)](http://badge.fury.io/pl/Yakuake-Sessions)
+
+=end markdown
+
+=head1 WARNING
+
+Backwardly incompatible changes to the Konsole API between 4.4 and
+4.8.4 broke this application (https://bugs.kde.org/show_bug.cgi?id=338914).
+A patch has been applied but it's gross
+
 =head1 Name
 
 Yakuake::Sessions - Session Manager for the Yakuake Terminal Emulator
 
 =head1 Version
 
-This documents version v0.14.$Rev: 2 $ of L<Yakuake::Sessions>
-
-=begin markdown
-
-[![CPAN version](https://badge.fury.io/pl/Yakuake-Sessions.svg)](http://badge.fury.io/pl/Yakuake-Sessions)
-
-=end markdown
+This documents version v0.15.$Rev: 1 $ of L<Yakuake::Sessions>
 
 =head1 Synopsis
 

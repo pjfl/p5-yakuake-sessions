@@ -29,7 +29,7 @@ __END__
 
 =head1 Name
 
-Yakuake::Sessions::Config - Attribute initialization from configuration file
+Yakuake::Sessions::Config - Attribute initialisation from configuration file
 
 =head1 Synopsis
 
@@ -41,7 +41,7 @@ Yakuake::Sessions::Config - Attribute initialization from configuration file
 
 =head1 Description
 
-Attribute initialization from configuration file. Any attributes defined
+Attribute initialisation from configuration file. Any attributes defined
 in the class can be set from the configuration file
 
 =head1 Configuration and Environment
@@ -49,10 +49,6 @@ in the class can be set from the configuration file
 Defines the following attributes;
 
 =over 3
-
-=item C<dbus>
-
-Qt communication interface and service name
 
 =item C<editor>
 
